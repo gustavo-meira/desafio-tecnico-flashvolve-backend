@@ -18,7 +18,8 @@
             "delimiter": "semi",
             "requireLast": false
           }
-        }]
+        }],
+        "@typescript-eslint/prefer-nullish-coalescing": "off"
       }
     }
   ]
