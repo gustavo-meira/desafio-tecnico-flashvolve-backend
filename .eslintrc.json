@@ -8,7 +8,17 @@
         "@typescript-eslint/semi": ["error", "always"],
         "comma-dangle": ["error", "always-multiline"],
         "@typescript-eslint/comma-dangle": ["error", "always-multiline"],
-        "@typescript-eslint/strict-boolean-expressions": "off"
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/member-delimiter-style": ["error", {
+          "multiline": {
+            "delimiter": "semi",
+            "requireLast": true
+          },
+          "singleline": {
+            "delimiter": "semi",
+            "requireLast": false
+          }
+        }]
       }
     }
   ]
