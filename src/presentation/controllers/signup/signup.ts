@@ -6,7 +6,7 @@ import {
   type AddAccount,
 } from './signupProtocols';
 import { MissingParamError, InvalidParamError } from '../../errors';
-import { badRequest, serverError } from '../../helpers/httpHelpers';
+import { badRequest, created, serverError } from '../../helpers/httpHelpers';
 
 export class SignUpController implements Controller {
   constructor (
@@ -38,10 +38,7 @@ export class SignUpController implements Controller {
 
       const account = this.addAccount.add({ name, email, password });
 
-      return {
-        statusCode: 201,
-        body: account,
-      };
+      return created(account);
     } catch (error) {
       return serverError();
     }
