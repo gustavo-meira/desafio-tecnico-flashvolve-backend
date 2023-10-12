@@ -1,17 +1,17 @@
-export class SignUpController {
-  handle (httpRequest: any): any {
-    if (!httpRequest.body.email) {
-      return {
-        statusCode: 400,
-        body: new Error('Missing params: email'),
-      };
-    }
+import { type httpRequest, type httpResponse } from '../protocols/http';
 
+export class SignUpController {
+  handle (httpRequest: httpRequest): httpResponse {
     if (!httpRequest.body.name) {
       return {
         statusCode: 400,
         body: new Error('Missing params: name'),
       };
+    };
+
+    return {
+      statusCode: 400,
+      body: new Error('Missing params: email'),
     };
   }
 }
