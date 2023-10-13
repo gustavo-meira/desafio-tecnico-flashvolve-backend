@@ -1,20 +1,25 @@
+import { type Encrypter } from '../../protocols/encrypter';
 import { DBAddAccount } from './dbAddAccount';
 
-class EncrypterStub {
-  async encrypt (value: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 1));
+const makeEncrypter = (): Encrypter => {
+  class EncrypterStub implements Encrypter {
+    async encrypt (value: string): Promise<string> {
+      await new Promise((resolve) => setTimeout(resolve, 1));
 
-    return 'hashed_value';
+      return 'hashed_value';
+    }
   }
-}
+
+  return new EncrypterStub();
+};
 
 interface SutTypes {
   sut: DBAddAccount;
-  encrypterStub: EncrypterStub;
+  encrypterStub: Encrypter;
 }
 
 const makeSut = (): SutTypes => {
-  const encrypterStub = new EncrypterStub();
+  const encrypterStub = makeEncrypter();
   const sut = new DBAddAccount(encrypterStub);
 
   return {
