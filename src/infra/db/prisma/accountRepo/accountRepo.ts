@@ -5,10 +5,10 @@ import { prismaDB } from '../lib/db';
 
 export class AccountPrismaRepo implements AddAccountRepository {
   async add (accountData: AddAccountModel): Promise<AccountModel> {
-    await prismaDB.user.create({
+    const account = await prismaDB.user.create({
       data: accountData,
     });
 
-    return null;
+    return account;
   }
 }
