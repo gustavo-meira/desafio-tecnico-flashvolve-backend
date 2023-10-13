@@ -18,9 +18,15 @@ jest.mock('../lib/db', () => ({
   },
 }));
 
+const makeSut = (): AccountPrismaRepo => {
+  const sut = new AccountPrismaRepo();
+
+  return sut;
+};
+
 describe('AccountPrismaRepo', () => {
   it('Should call prisma with correct values', async () => {
-    const sut = new AccountPrismaRepo();
+    const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.user, 'create');
     const accountData = {
       name: 'any_name',
@@ -39,7 +45,7 @@ describe('AccountPrismaRepo', () => {
   });
 
   it('Should return an account on success', async () => {
-    const sut = new AccountPrismaRepo();
+    const sut = makeSut();
     const accountData = {
       name: 'any_name',
       email: 'any_email@email.com',
@@ -56,7 +62,7 @@ describe('AccountPrismaRepo', () => {
   });
 
   it('Should throw if prisma throw', async () => {
-    const sut = new AccountPrismaRepo();
+    const sut = makeSut();
     jest.spyOn(prismaDB.user, 'create').mockImplementationOnce(() => {
       throw new Error();
     });
