@@ -9,6 +9,10 @@
     "module": "node16",
     "target": "es2022",
     "outDir": "./dist",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
+    },
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
