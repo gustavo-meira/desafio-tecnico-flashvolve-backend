@@ -54,4 +54,19 @@ describe('AccountPrismaRepo', () => {
       password: 'any_password',
     });
   });
+
+  it('Should throw if prisma throw', async () => {
+    const sut = new AccountPrismaRepo();
+    jest.spyOn(prismaDB.user, 'create').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const accountData = {
+      name: 'any_name',
+      email: 'any_email@email.com',
+      password: 'any_password',
+    };
+
+    const promise = sut.add(accountData);
+    await expect(promise).rejects.toThrow();
+  });
 });
