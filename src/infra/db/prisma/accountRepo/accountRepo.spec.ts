@@ -37,4 +37,21 @@ describe('AccountPrismaRepo', () => {
       },
     });
   });
+
+  it('Should return an account on success', async () => {
+    const sut = new AccountPrismaRepo();
+    const accountData = {
+      name: 'any_name',
+      email: 'any_email@email.com',
+      password: 'any_password',
+    };
+
+    const account = await sut.add(accountData);
+    expect(account).toEqual({
+      id: 'any_id',
+      name: 'any_name',
+      email: 'any_email@email.com',
+      password: 'any_password',
+    });
+  });
 });
