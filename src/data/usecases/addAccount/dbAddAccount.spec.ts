@@ -1,5 +1,10 @@
 import { DBAddAccount } from './dbAddAccount';
-import { type Encrypter } from './dbAddAccountProtocols';
+import {
+  type AddAccountRepository,
+  type AccountModel,
+  type AddAccountModel,
+  type Encrypter,
+} from './dbAddAccountProtocols';
 
 const makeEncrypter = (): Encrypter => {
   class EncrypterStub implements Encrypter {
@@ -13,18 +18,38 @@ const makeEncrypter = (): Encrypter => {
   return new EncrypterStub();
 };
 
+const makeAddAccountRepository = (): AddAccountRepository => {
+  class AddAccountRepositoryStub implements AddAccountRepository {
+    async add (accountData: AddAccountModel): Promise<AccountModel> {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
+      return {
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email@email.com',
+        password: 'hashed_value',
+      };
+    }
+  }
+
+  return new AddAccountRepositoryStub();
+};
+
 interface SutTypes {
   sut: DBAddAccount;
   encrypterStub: Encrypter;
+  addAccountRepositoryStub: AddAccountRepository;
 }
 
 const makeSut = (): SutTypes => {
   const encrypterStub = makeEncrypter();
-  const sut = new DBAddAccount(encrypterStub);
+  const addAccountRepositoryStub = makeAddAccountRepository();
+  const sut = new DBAddAccount(encrypterStub, addAccountRepositoryStub);
 
   return {
     sut,
     encrypterStub,
+    addAccountRepositoryStub,
   };
 };
 
@@ -57,5 +82,22 @@ describe('DBAddAccount UseCase', () => {
 
     const promise = sut.add(accountData);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should call AddAccountRepository with correct values', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut();
+    const addSpy = jest.spyOn(addAccountRepositoryStub, 'add');
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password',
+    };
+
+    await sut.add(accountData);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'hashed_value',
+    });
   });
 });
