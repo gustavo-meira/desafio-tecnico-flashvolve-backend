@@ -1,5 +1,8 @@
 import { EmailValidatorAdapter } from './emailValidationAdapter';
 import validator from 'validator';
+import Chance from 'chance';
+
+const chance = new Chance();
 
 jest.mock('validator', () => ({
   isEmail: () => true,
@@ -14,22 +17,23 @@ describe('EmailValidator Adapter', () => {
     const sut = makeSut();
     jest.spyOn(validator, 'isEmail').mockReturnValueOnce(false);
 
-    const isValid = sut.isValid('invalid_email@email.com');
+    const isValid = sut.isValid(chance.email());
     expect(isValid).toBe(false);
   });
 
   it('Should return true if zod return true', () => {
     const sut = makeSut();
 
-    const isValid = sut.isValid('valid_email@email.com');
+    const isValid = sut.isValid(chance.email());
     expect(isValid).toBe(true);
   });
 
   it('Should call validator with correct email', () => {
     const sut = makeSut();
+    const email = chance.email();
     const isEmailSpy = jest.spyOn(validator, 'isEmail');
 
-    sut.isValid('any_email@email.com');
-    expect(isEmailSpy).toHaveBeenCalledWith('any_email@email.com');
+    sut.isValid(email);
+    expect(isEmailSpy).toHaveBeenCalledWith(email);
   });
 });
