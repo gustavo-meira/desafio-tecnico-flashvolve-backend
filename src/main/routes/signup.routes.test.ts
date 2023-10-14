@@ -1,5 +1,19 @@
 import request from 'supertest';
 import { app } from '../config/app';
+import Chance from 'chance';
+
+const chance = new Chance();
+
+const accountData = {
+  name: chance.name(),
+  email: chance.email(),
+  password: chance.string(),
+};
+
+const accountDataWithId = {
+  id: chance.guid(),
+  ...accountData,
+};
 
 jest.mock('../../infra/db/prisma/lib/db', () => ({
   prismaDB: {
@@ -7,12 +21,7 @@ jest.mock('../../infra/db/prisma/lib/db', () => ({
       async create () {
         await new Promise((resolve) => setTimeout(resolve, 1));
 
-        return {
-          id: 'any_id',
-          name: 'any_name',
-          email: 'any_email@email.com',
-          password: 'any_password',
-        };
+        return accountDataWithId;
       },
     },
   },
@@ -23,10 +32,8 @@ describe('SignUp Routes', () => {
     await request(app)
       .post('/api/signup')
       .send({
-        name: 'any_name',
-        email: 'any_email@email.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password',
+        ...accountData,
+        passwordConfirmation: accountData.password,
       })
       .expect(201);
   });
