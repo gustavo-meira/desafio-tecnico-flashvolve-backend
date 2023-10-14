@@ -1,5 +1,19 @@
 import { AccountPrismaRepo } from './accountRepo';
 import { prismaDB } from '../lib/db';
+import Chance from 'chance';
+
+const chance = new Chance();
+
+const accountData = {
+  name: chance.name(),
+  email: chance.email(),
+  password: chance.string(),
+};
+
+const accountDataWithId = {
+  id: chance.guid(),
+  ...accountData,
+};
 
 jest.mock('../lib/db', () => ({
   prismaDB: {
@@ -7,12 +21,7 @@ jest.mock('../lib/db', () => ({
       async create () {
         await new Promise((resolve) => setTimeout(resolve, 1));
 
-        return {
-          id: 'any_id',
-          name: 'any_name',
-          email: 'any_email@email.com',
-          password: 'any_password',
-        };
+        return accountDataWithId;
       },
     },
   },
@@ -24,41 +33,22 @@ const makeSut = (): AccountPrismaRepo => {
   return sut;
 };
 
-describe('AccountPrismaRepo', () => {
+describe('AccountPrisma Repository', () => {
   it('Should call prisma with correct values', async () => {
     const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.user, 'create');
-    const accountData = {
-      name: 'any_name',
-      email: 'any_email@email.com',
-      password: 'any_password',
-    };
 
     await sut.add(accountData);
     expect(createSpy).toHaveBeenCalledWith({
-      data: {
-        name: 'any_name',
-        email: 'any_email@email.com',
-        password: 'any_password',
-      },
+      data: accountData,
     });
   });
 
   it('Should return an account on success', async () => {
     const sut = makeSut();
-    const accountData = {
-      name: 'any_name',
-      email: 'any_email@email.com',
-      password: 'any_password',
-    };
 
     const account = await sut.add(accountData);
-    expect(account).toEqual({
-      id: 'any_id',
-      name: 'any_name',
-      email: 'any_email@email.com',
-      password: 'any_password',
-    });
+    expect(account).toEqual(accountDataWithId);
   });
 
   it('Should throw if prisma throw', async () => {
@@ -66,11 +56,6 @@ describe('AccountPrismaRepo', () => {
     jest.spyOn(prismaDB.user, 'create').mockImplementationOnce(() => {
       throw new Error();
     });
-    const accountData = {
-      name: 'any_name',
-      email: 'any_email@email.com',
-      password: 'any_password',
-    };
 
     const promise = sut.add(accountData);
     await expect(promise).rejects.toThrow();
