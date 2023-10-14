@@ -1,10 +1,15 @@
 import bcrypt from 'bcrypt';
 import { BcryptAdapter } from './bcryptAdapter';
+import Chance from 'chance';
+
+const chance = new Chance();
+
+const hashedValue = chance.string();
 
 jest.mock('bcrypt', () => ({
   async hash (): Promise<string> {
     await new Promise((resolve) => setTimeout(resolve, 1));
-    return 'hashed_value';
+    return hashedValue;
   },
 }));
 
@@ -19,16 +24,17 @@ describe('Bcrypt Adapter', () => {
     const salt = 12;
     const sut = makeSut(salt);
     const hashSpy = jest.spyOn(bcrypt, 'hash');
+    const valueToHash = chance.string();
 
-    await sut.encrypt('any_value');
-    expect(hashSpy).toHaveBeenCalledWith('any_value', salt);
+    await sut.encrypt(valueToHash);
+    expect(hashSpy).toHaveBeenCalledWith(valueToHash, salt);
   });
 
   it('Should return a hash on success', async () => {
     const sut = makeSut();
 
-    const hash = await sut.encrypt('any_value');
-    expect(hash).toBe('hashed_value');
+    const hash = await sut.encrypt(chance.string());
+    expect(hash).toBe(hashedValue);
   });
 
   it('Should throw if bcrypt throw', async () => {
@@ -37,7 +43,7 @@ describe('Bcrypt Adapter', () => {
       throw new Error();
     });
 
-    const promise = sut.encrypt('any_value');
+    const promise = sut.encrypt(chance.string());
     await expect(promise).rejects.toThrow();
   });
 });
