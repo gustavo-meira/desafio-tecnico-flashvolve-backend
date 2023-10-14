@@ -22,6 +22,9 @@ devDependencies:
   '@types/bcrypt':
     specifier: ^5.0.0
     version: 5.0.0
+  '@types/chance':
+    specifier: ^1.1.4
+    version: 1.1.4
   '@types/express':
     specifier: ^4.17.19
     version: 4.17.19
@@ -40,6 +43,9 @@ devDependencies:
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.4.0
     version: 6.7.5(@typescript-eslint/parser@6.7.5)(eslint@8.51.0)(typescript@5.2.2)
+  chance:
+    specifier: ^1.1.11
+    version: 1.1.11
   eslint:
     specifier: ^8.51.0
     version: 8.51.0
@@ -896,6 +902,10 @@ packages:
       '@types/node': 20.8.4
     dev: true
 
+  /@types/chance@1.1.4:
+    resolution: {integrity: sha512-et3alUWI9jEPnGai+QRCyDdRMYS+atq32IaldWURyxPRZBYg+cSwppxK2UHnDv9X/0pdoxR3Ufbz5hRmjD/uNg==}
+    dev: true
+
   /@types/connect@3.4.36:
     resolution: {integrity: sha512-P63Zd/JUGq+PdrM1lv0Wv5SBYeA2+CORvbrXbngriYY0jzLUWfQMQQxOhjONEz/wlHOAxOdY7CY65rgQdTjq2w==}
     dependencies:
@@ -1590,6 +1600,10 @@ packages:
   /chalk@5.3.0:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: true
+
+  /chance@1.1.11:
+    resolution: {integrity: sha512-kqTg3WWywappJPqtgrdvbA380VoXO2eu9VCV895JgbyHsaErXdyHK9LOZ911OvAk6L0obK7kDk9CGs8+oBawVA==}
     dev: true
 
   /char-regex@1.0.2:
