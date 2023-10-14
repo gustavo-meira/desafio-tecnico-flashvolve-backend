@@ -19,7 +19,8 @@
             "requireLast": false
           }
         }],
-        "@typescript-eslint/prefer-nullish-coalescing": "off"
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
+        "@typescript-eslint/no-misused-promises": "off"
       }
     }
   ]
