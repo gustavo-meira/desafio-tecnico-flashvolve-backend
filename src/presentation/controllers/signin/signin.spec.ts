@@ -1,5 +1,5 @@
 import { InvalidParamError, MissingParamError } from '@/presentation/errors';
-import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
 import { type EmailValidator } from '@/presentation/protocols/emailValidator';
 import { SignInController } from './sigin';
 import Chance from 'chance';
@@ -116,5 +116,13 @@ describe('SignIn Controller', () => {
 
     const httpResponse = await sut.handle({ body: signInAccount });
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should return 401 if invalid credentials are provided', async () => {
+    const { sut, authenticationStub } = makeSut();
+    jest.spyOn(authenticationStub, 'auth').mockResolvedValueOnce(null);
+
+    const httpResponse = await sut.handle({ body: signInAccount });
+    expect(httpResponse).toEqual(unauthorized());
   });
 });
