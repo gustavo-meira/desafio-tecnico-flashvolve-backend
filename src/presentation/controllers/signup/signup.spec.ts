@@ -10,6 +10,7 @@ import { SignUpController } from './signup';
 import { InvalidParamError, MissingParamError, ServerError } from '@/presentation/errors';
 import { type AccountModel } from '@/domain/models/account';
 import Chance from 'chance';
+import { badRequest } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -224,5 +225,15 @@ describe('SignUp Controller', () => {
 
     await sut.handle(httpRequest);
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body);
+  });
+
+  it('Should return 400 if Validation returns an error', async () => {
+    const { sut, validationStub } = makeSut();
+    const missingParamError = new MissingParamError(chance.word());
+    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(missingParamError);
+    const httpRequest = makeHttpRequest();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(badRequest(missingParamError));
   });
 });
