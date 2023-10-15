@@ -1,5 +1,5 @@
 import { InvalidParamError, MissingParamError } from '@/presentation/errors';
-import { badRequest, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
+import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
 import { type EmailValidator } from '@/presentation/protocols/emailValidator';
 import { SignInController } from './sigin';
 import Chance from 'chance';
@@ -12,6 +12,8 @@ const signInAccount = {
   email: chance.email(),
   password: chance.string(),
 };
+
+const accessToken = chance.string();
 
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -28,7 +30,7 @@ const makeAuthentication = (): Authentication => {
     async auth (authentication: AuthenticationModel): Promise<string> {
       await new Promise((resolve) => setTimeout(resolve, 1));
 
-      return 'any_token';
+      return accessToken;
     }
   }
 
@@ -124,5 +126,12 @@ describe('SignIn Controller', () => {
 
     const httpResponse = await sut.handle({ body: signInAccount });
     expect(httpResponse).toEqual(unauthorized());
+  });
+
+  it('Should return 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle({ body: signInAccount });
+    expect(httpResponse).toEqual(ok({ accessToken }));
   });
 });
