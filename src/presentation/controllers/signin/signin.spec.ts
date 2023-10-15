@@ -3,6 +3,8 @@ import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 import { type EmailValidator } from '@/presentation/protocols/emailValidator';
 import { SignInController } from './sigin';
 import Chance from 'chance';
+import { type Authentication } from '@/domain/useCases/authentication';
+import { type AuthenticationModel } from '@/domain/models/authentication';
 
 const chance = new Chance();
 
@@ -21,18 +23,33 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub();
 };
 
+const makeAuthentication = (): Authentication => {
+  class AuthenticationStub implements Authentication {
+    async auth (authentication: AuthenticationModel): Promise<string> {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
+      return 'any_token';
+    }
+  }
+
+  return new AuthenticationStub();
+};
+
 interface SutTypes {
   sut: SignInController;
   emailValidatorStub: EmailValidator;
+  authenticationStub: Authentication;
 }
 
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator();
-  const sut = new SignInController(emailValidatorStub);
+  const authenticationStub = makeAuthentication();
+  const sut = new SignInController(emailValidatorStub, authenticationStub);
 
   return {
     sut,
     emailValidatorStub,
+    authenticationStub,
   };
 };
 
@@ -83,5 +100,13 @@ describe('SignIn Controller', () => {
 
     const httpResponse = await sut.handle({ body: signInAccount });
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should call Authentication with correct values', async () => {
+    const { sut, authenticationStub } = makeSut();
+    const authSpy = jest.spyOn(authenticationStub, 'auth');
+
+    await sut.handle({ body: signInAccount });
+    expect(authSpy).toHaveBeenCalledWith(signInAccount);
   });
 });
