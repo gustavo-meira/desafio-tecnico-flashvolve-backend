@@ -6,7 +6,7 @@ import {
   type EmailValidator,
   type Authentication,
 } from './siginProtocols';
-import { badRequest, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
+import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
 
 export class SignInController implements Controller {
   constructor (
@@ -35,6 +35,8 @@ export class SignInController implements Controller {
       if (!accessToken) {
         return unauthorized();
       }
+
+      return ok({ accessToken });
     } catch (error) {
       return serverError();
     }
