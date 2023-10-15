@@ -42,4 +42,11 @@ describe('Validation Composite', () => {
 
     expect(error).toEqual(new Error());
   });
+
+  it('Should return falsy if all validation succeeds', () => {
+    const { sut } = makeSut();
+    const error = sut.validate(fieldsToValidate);
+
+    expect(error).toBeFalsy();
+  });
 });
