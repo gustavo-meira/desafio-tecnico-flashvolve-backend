@@ -11,13 +11,17 @@ export class SignInController implements Controller {
   constructor (private readonly emailValidator: EmailValidator) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    if (!httpRequest.body.password) {
-      return badRequest(new MissingParamError('password'));
-    } else if (!httpRequest.body.email) {
-      return badRequest(new MissingParamError('email'));
+    const requiredFields = ['password', 'email'];
+
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) {
+        return badRequest(new MissingParamError(field));
+      }
     }
 
-    const isEmailValid = this.emailValidator.isValid(httpRequest.body.email);
+    const { email } = httpRequest.body;
+
+    const isEmailValid = this.emailValidator.isValid(email);
 
     if (!isEmailValid) {
       return badRequest(new InvalidParamError('email'));
