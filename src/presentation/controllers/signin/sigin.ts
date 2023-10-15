@@ -1,4 +1,4 @@
-import { MissingParamError } from '@/presentation/errors';
+import { MissingParamError, InvalidParamError } from '@/presentation/errors';
 import {
   type HttpRequest,
   type HttpResponse,
@@ -17,6 +17,10 @@ export class SignInController implements Controller {
       return badRequest(new MissingParamError('email'));
     }
 
-    this.emailValidator.isValid(httpRequest.body.email);
+    const isEmailValid = this.emailValidator.isValid(httpRequest.body.email);
+
+    if (!isEmailValid) {
+      return badRequest(new InvalidParamError('email'));
+    }
   }
 }
