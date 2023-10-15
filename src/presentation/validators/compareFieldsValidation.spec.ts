@@ -23,4 +23,15 @@ describe('CompareFields Validation', () => {
     });
     expect(error).toEqual(new InvalidParamError(fieldToCompareName));
   });
+
+  it('Should return falsy if validation succeeds', () => {
+    const sut = makeSut();
+    const fieldValue = chance.word();
+
+    const error = sut.validate({
+      [fieldName]: fieldValue,
+      [fieldToCompareName]: fieldValue,
+    });
+    expect(error).toBeFalsy();
+  });
 });
