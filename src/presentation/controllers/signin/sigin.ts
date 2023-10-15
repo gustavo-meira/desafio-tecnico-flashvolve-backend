@@ -5,26 +5,30 @@ import {
   type Controller,
   type EmailValidator,
 } from './siginProtocols';
-import { badRequest } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 
 export class SignInController implements Controller {
   constructor (private readonly emailValidator: EmailValidator) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    const requiredFields = ['password', 'email'];
+    try {
+      const requiredFields = ['password', 'email'];
 
-    for (const field of requiredFields) {
-      if (!httpRequest.body[field]) {
-        return badRequest(new MissingParamError(field));
+      for (const field of requiredFields) {
+        if (!httpRequest.body[field]) {
+          return badRequest(new MissingParamError(field));
+        }
       }
-    }
 
-    const { email } = httpRequest.body;
+      const { email } = httpRequest.body;
 
-    const isEmailValid = this.emailValidator.isValid(email);
+      const isEmailValid = this.emailValidator.isValid(email);
 
-    if (!isEmailValid) {
-      return badRequest(new InvalidParamError('email'));
+      if (!isEmailValid) {
+        return badRequest(new InvalidParamError('email'));
+      }
+    } catch (error) {
+      return serverError();
     }
   }
 }
