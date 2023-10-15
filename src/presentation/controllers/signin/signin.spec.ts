@@ -10,9 +10,21 @@ const signInAccount = {
   password: chance.string(),
 };
 
+interface SutTypes {
+  sut: SignInController;
+}
+
+const makeSut = (): SutTypes => {
+  const sut = new SignInController();
+
+  return {
+    sut,
+  };
+};
+
 describe('SignIn Controller', () => {
   it('Should return 400 if no email is provided', async () => {
-    const sut = new SignInController();
+    const { sut } = makeSut();
 
     const httpResponse = await sut.handle({
       body: {
@@ -23,7 +35,7 @@ describe('SignIn Controller', () => {
   });
 
   it('Should return 400 if no password is provided', async () => {
-    const sut = new SignInController();
+    const { sut } = makeSut();
 
     const httpResponse = await sut.handle({
       body: {
