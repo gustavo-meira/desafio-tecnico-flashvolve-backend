@@ -6,7 +6,7 @@ import {
   type EmailValidator,
   type Authentication,
 } from './siginProtocols';
-import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
 
 export class SignInController implements Controller {
   constructor (
@@ -30,7 +30,11 @@ export class SignInController implements Controller {
         return badRequest(new InvalidParamError('email'));
       }
 
-      await this.authentication.auth(httpRequest.body);
+      const accessToken = await this.authentication.auth(httpRequest.body);
+
+      if (!accessToken) {
+        return unauthorized();
+      }
     } catch (error) {
       return serverError();
     }
