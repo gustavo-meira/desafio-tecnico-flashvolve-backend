@@ -4,11 +4,15 @@ import {
   type HttpResponse,
   type Controller,
   type EmailValidator,
+  type Authentication,
 } from './siginProtocols';
 import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 
 export class SignInController implements Controller {
-  constructor (private readonly emailValidator: EmailValidator) {}
+  constructor (
+    private readonly emailValidator: EmailValidator,
+    private readonly authentication: Authentication,
+  ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
@@ -20,13 +24,13 @@ export class SignInController implements Controller {
         }
       }
 
-      const { email } = httpRequest.body;
-
-      const isEmailValid = this.emailValidator.isValid(email);
+      const isEmailValid = this.emailValidator.isValid(httpRequest.body.email);
 
       if (!isEmailValid) {
         return badRequest(new InvalidParamError('email'));
       }
+
+      await this.authentication.auth(httpRequest.body);
     } catch (error) {
       return serverError();
     }
