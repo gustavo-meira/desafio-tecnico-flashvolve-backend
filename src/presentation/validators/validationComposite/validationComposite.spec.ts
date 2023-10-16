@@ -1,4 +1,4 @@
-import { type InputValidation, type Validation } from '../validation';
+import { type InputValidation, type Validation } from '../../protocols/validation';
 import { ValidationComposite } from './validationComposite';
 import Chance from 'chance';
 

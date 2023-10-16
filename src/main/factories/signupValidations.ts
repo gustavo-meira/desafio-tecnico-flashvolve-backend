@@ -1,4 +1,5 @@
-import { type Validation, ValidationBuilder, ValidationComposite } from '@/presentation/validators';
+import { type Validation } from '@/presentation/protocols';
+import { ValidationBuilder, ValidationComposite } from '@/presentation/validators';
 
 export const makeSignUpValidations = (): Validation => {
   const nameValidations = ValidationBuilder.field('name').required().build();

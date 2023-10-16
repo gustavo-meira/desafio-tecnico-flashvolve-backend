@@ -2,8 +2,8 @@ import {
   CompareFieldsValidation,
   EmailValidation,
   RequiredFieldValidation,
-  type Validation,
 } from '..';
+import { type Validation } from '@/presentation/protocols';
 
 export class ValidationBuilder {
   constructor (
