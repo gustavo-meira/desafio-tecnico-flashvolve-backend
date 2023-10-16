@@ -49,4 +49,12 @@ describe('DBAuthentication UseCase', () => {
     await sut.auth(accountToFind);
     expect(loadSpy).toHaveBeenCalledWith(accountToFind.email);
   });
+
+  it('Should throw if LoadAccountByEmailRepo throws', async () => {
+    const { sut, loadAccountByEmailRepo } = makeSut();
+    jest.spyOn(loadAccountByEmailRepo, 'load').mockRejectedValueOnce(new Error());
+
+    const promise = sut.auth(accountToFind);
+    await expect(promise).rejects.toThrow();
+  });
 });
