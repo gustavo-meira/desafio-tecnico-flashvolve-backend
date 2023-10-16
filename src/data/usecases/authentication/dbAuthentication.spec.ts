@@ -3,6 +3,7 @@ import { DbAuthentication } from './dbAuthentication';
 import Chance from 'chance';
 import { type LoadAccountByEmailRepository } from '@/data/protocols/loadAccountByEmailRepository';
 import { type HashComparer } from '@/data/protocols/hashCompare';
+import { type TokenGenerator } from '@/data/protocols/tokenGenerator';
 
 const chance = new Chance();
 
@@ -17,6 +18,8 @@ const accountToReturn: AccountModel = {
   password: chance.string(),
   ...accountToFind,
 };
+
+const token = chance.string();
 
 const makeLoadAccountByEmailRepo = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepoStub implements LoadAccountByEmailRepository {
@@ -38,21 +41,38 @@ const makeHashComparer = (): HashComparer => {
   return new HashCompareStub();
 };
 
+const makeTokenGenerator = (): TokenGenerator => {
+  class TokenGeneratorStub implements TokenGenerator {
+    async generate (id: string): Promise<string> {
+      return await Promise.resolve(token);
+    }
+  }
+
+  return new TokenGeneratorStub();
+};
+
 interface SutType {
   sut: DbAuthentication;
   loadAccountByEmailRepo: LoadAccountByEmailRepository;
   hashComparerStub: HashComparer;
+  tokenGeneratorStub: TokenGenerator;
 };
 
 const makeSut = (): SutType => {
   const loadAccountByEmailRepo = makeLoadAccountByEmailRepo();
   const hashComparerStub = makeHashComparer();
-  const sut = new DbAuthentication(loadAccountByEmailRepo, hashComparerStub);
+  const tokenGeneratorStub = makeTokenGenerator();
+  const sut = new DbAuthentication(
+    loadAccountByEmailRepo,
+    hashComparerStub,
+    tokenGeneratorStub,
+  );
 
   return {
     sut,
     loadAccountByEmailRepo,
     hashComparerStub,
+    tokenGeneratorStub,
   };
 };
 
@@ -103,5 +123,13 @@ describe('DBAuthentication UseCase', () => {
 
     const accessToken = await sut.auth(accountToFind);
     expect(accessToken).toBeNull();
+  });
+
+  it('Should call TokenGenerator with correct id', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+    const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate');
+
+    await sut.auth(accountToFind);
+    expect(generateSpy).toHaveBeenCalledWith(accountToReturn.id);
   });
 });
