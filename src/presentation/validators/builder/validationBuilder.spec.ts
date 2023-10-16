@@ -29,4 +29,15 @@ describe('ValidationBuilder', () => {
 
     expect(validations).toEqual([new EmailValidation(fieldName)]);
   });
+
+  it('Should return a list of validations', () => {
+    const fieldToCompare = chance.word();
+    const validations = sut.field(fieldName).required().sameAs(fieldToCompare).email().build();
+
+    expect(validations).toEqual([
+      new RequiredFieldValidation(fieldName),
+      new CompareFieldsValidation(fieldName, fieldToCompare),
+      new EmailValidation(fieldName),
+    ]);
+  });
 });
