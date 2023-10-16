@@ -1,4 +1,4 @@
-import { InvalidParamError } from '../errors';
+import { InvalidParamError } from '../../errors';
 import { EmailValidation } from './emailValidation';
 import Chance from 'chance';
 

@@ -1,5 +1,5 @@
 import { CompareFieldsValidation } from './compareFieldsValidation';
-import { InvalidParamError } from '../errors';
+import { InvalidParamError } from '../../errors';
 import Chance from 'chance';
 
 const chance = new Chance();
