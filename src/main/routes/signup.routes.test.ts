@@ -59,4 +59,15 @@ describe('SignUp Routes', () => {
       })
       .expect(400);
   });
+
+  it('Should return a 400 if no password is provided', async () => {
+    await request(app)
+      .post('/api/signup')
+      .send({
+        name: accountData.name,
+        email: accountData.email,
+        passwordConfirmation: accountData.password,
+      })
+      .expect(400);
+  });
 });
