@@ -1,1 +1,1 @@
-export * from './signup.routes';
+export * from './auth.routes';
