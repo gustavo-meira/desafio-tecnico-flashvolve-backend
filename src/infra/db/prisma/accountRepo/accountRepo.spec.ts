@@ -72,4 +72,16 @@ describe('AccountPrisma Repository', () => {
     const account = await sut.loadByEmail(accountData.email);
     expect(account).toEqual(accountDataWithId);
   });
+
+  it('Should call prisma with correct values on loadByEmail', async () => {
+    const sut = makeSut();
+    const findUniqueSpy = jest.spyOn(prismaDB.user, 'findUnique');
+
+    await sut.loadByEmail(accountData.email);
+    expect(findUniqueSpy).toHaveBeenCalledWith({
+      where: {
+        email: accountData.email,
+      },
+    });
+  });
 });
