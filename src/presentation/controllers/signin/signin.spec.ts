@@ -4,6 +4,7 @@ import { SignInController } from './sigin';
 import Chance from 'chance';
 import { type Authentication } from '@/domain/useCases/authentication';
 import { type AuthenticationModel } from '@/domain/models/authentication';
+import { type InputValidation, type Validation } from './siginProtocols';
 
 const chance = new Chance();
 
@@ -26,18 +27,31 @@ const makeAuthentication = (): Authentication => {
   return new AuthenticationStub();
 };
 
+const makeValidation = (): Validation => {
+  class ValidationStub implements Validation {
+    validate (input: InputValidation): Error | null {
+      return null;
+    }
+  }
+
+  return new ValidationStub();
+};
+
 interface SutTypes {
   sut: SignInController;
   authenticationStub: Authentication;
+  validationStub: Validation;
 }
 
 const makeSut = (): SutTypes => {
   const authenticationStub = makeAuthentication();
-  const sut = new SignInController(authenticationStub);
+  const validationStub = makeValidation();
+  const sut = new SignInController(authenticationStub, validationStub);
 
   return {
     sut,
     authenticationStub,
+    validationStub,
   };
 };
 
@@ -93,5 +107,13 @@ describe('SignIn Controller', () => {
 
     const httpResponse = await sut.handle({ body: signInAccount });
     expect(httpResponse).toEqual(ok({ accessToken }));
+  });
+
+  it('Should call Validation with correct values', async () => {
+    const { sut, validationStub } = makeSut();
+    const validateSpy = jest.spyOn(validationStub, 'validate');
+
+    await sut.handle({ body: signInAccount });
+    expect(validateSpy).toHaveBeenCalledWith(signInAccount);
   });
 });
