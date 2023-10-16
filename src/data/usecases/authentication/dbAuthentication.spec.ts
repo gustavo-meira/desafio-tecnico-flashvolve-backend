@@ -132,4 +132,12 @@ describe('DBAuthentication UseCase', () => {
     await sut.auth(accountToFind);
     expect(generateSpy).toHaveBeenCalledWith(accountToReturn.id);
   });
+
+  it('Should throw if TokenGenerator throws', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+    jest.spyOn(tokenGeneratorStub, 'generate').mockRejectedValueOnce(new Error());
+
+    const promise = sut.auth(accountToFind);
+    await expect(promise).rejects.toThrow();
+  });
 });
