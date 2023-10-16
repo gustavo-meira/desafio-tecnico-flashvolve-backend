@@ -1,5 +1,9 @@
 import { ValidationBuilder as sut } from './validationBuilder';
-import { RequiredFieldValidation, CompareFieldsValidation } from '..';
+import {
+  RequiredFieldValidation,
+  CompareFieldsValidation,
+  EmailValidation,
+} from '..';
 import { Chance } from 'chance';
 
 const chance = new Chance();
@@ -18,5 +22,11 @@ describe('ValidationBuilder', () => {
     const validations = sut.field(fieldName).sameAs(fieldToCompare).build();
 
     expect(validations).toEqual([new CompareFieldsValidation(fieldName, fieldToCompare)]);
+  });
+
+  it('Should return EmailValidation', () => {
+    const validations = sut.field(fieldName).email().build();
+
+    expect(validations).toEqual([new EmailValidation(fieldName)]);
   });
 });
