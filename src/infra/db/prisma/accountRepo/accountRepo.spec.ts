@@ -84,4 +84,14 @@ describe('AccountPrisma Repository', () => {
       },
     });
   });
+
+  it('Should throw if prisma findUnique throw', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findUnique').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.loadByEmail(accountData.email);
+    await expect(promise).rejects.toThrow();
+  });
 });
