@@ -116,4 +116,13 @@ describe('SignIn Controller', () => {
     await sut.handle({ body: signInAccount });
     expect(validateSpy).toHaveBeenCalledWith(signInAccount);
   });
+
+  it('Should return 400 if Validation returns an error', async () => {
+    const { sut, validationStub } = makeSut();
+    const missingParamError = new MissingParamError(chance.word());
+    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(missingParamError);
+
+    const httpResponse = await sut.handle({ body: signInAccount });
+    expect(httpResponse).toEqual(badRequest(missingParamError));
+  });
 });
