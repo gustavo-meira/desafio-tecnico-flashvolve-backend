@@ -88,4 +88,12 @@ describe('DBAuthentication UseCase', () => {
     await sut.auth(accountToFind);
     expect(compareSpy).toHaveBeenCalledWith(accountToFind.password, accountToReturn.password);
   });
+
+  it('Should throw if HashCompare throws', async () => {
+    const { sut, hashComparerStub } = makeSut();
+    jest.spyOn(hashComparerStub, 'compare').mockRejectedValueOnce(new Error());
+
+    const promise = sut.auth(accountToFind);
+    await expect(promise).rejects.toThrow();
+  });
 });
