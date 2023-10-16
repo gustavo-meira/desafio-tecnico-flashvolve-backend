@@ -4,7 +4,6 @@ import {
   type LoadAccountByEmailRepository,
   type HashComparer,
   type TokenGenerator,
-  type UpdateAccessTokenRepository,
 } from './dbAuthenticationProtocols';
 import Chance from 'chance';
 
@@ -54,34 +53,21 @@ const makeTokenGenerator = (): TokenGenerator => {
   return new TokenGeneratorStub();
 };
 
-const makeUpdateAccessTokenRepo = (): UpdateAccessTokenRepository => {
-  class UpdateAccessTokenRepoStub implements UpdateAccessTokenRepository {
-    async updateAccessToken (id: string, token: string): Promise<void> {
-      await Promise.resolve();
-    }
-  }
-
-  return new UpdateAccessTokenRepoStub();
-};
-
 interface SutType {
   sut: DbAuthentication;
   loadAccountByEmailRepo: LoadAccountByEmailRepository;
   hashComparerStub: HashComparer;
   tokenGeneratorStub: TokenGenerator;
-  updateAccessTokenRepoStub: UpdateAccessTokenRepository;
 };
 
 const makeSut = (): SutType => {
   const loadAccountByEmailRepo = makeLoadAccountByEmailRepo();
   const hashComparerStub = makeHashComparer();
   const tokenGeneratorStub = makeTokenGenerator();
-  const updateAccessTokenRepoStub = makeUpdateAccessTokenRepo();
   const sut = new DbAuthentication(
     loadAccountByEmailRepo,
     hashComparerStub,
     tokenGeneratorStub,
-    updateAccessTokenRepoStub,
   );
 
   return {
@@ -89,7 +75,6 @@ const makeSut = (): SutType => {
     loadAccountByEmailRepo,
     hashComparerStub,
     tokenGeneratorStub,
-    updateAccessTokenRepoStub,
   };
 };
 
@@ -165,21 +150,5 @@ describe('DBAuthentication UseCase', () => {
 
     const accessToken = await sut.auth(accountToFind);
     expect(accessToken).toBe(token);
-  });
-
-  it('Should call UpdateAccessTokenRepo with correct values', async () => {
-    const { sut, updateAccessTokenRepoStub } = makeSut();
-    const updateSpy = jest.spyOn(updateAccessTokenRepoStub, 'updateAccessToken');
-
-    await sut.auth(accountToFind);
-    expect(updateSpy).toHaveBeenCalledWith(accountToReturn.id, token);
-  });
-
-  it('Should throw if UpdateAccessTokenRepo throws', async () => {
-    const { sut, updateAccessTokenRepoStub } = makeSut();
-    jest.spyOn(updateAccessTokenRepoStub, 'updateAccessToken').mockRejectedValueOnce(new Error());
-
-    const promise = sut.auth(accountToFind);
-    await expect(promise).rejects.toThrow();
   });
 });

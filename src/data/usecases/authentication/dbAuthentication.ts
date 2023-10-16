@@ -4,7 +4,6 @@ import {
   type LoadAccountByEmailRepository,
   type HashComparer,
   type TokenGenerator,
-  type UpdateAccessTokenRepository,
 } from './dbAuthenticationProtocols';
 
 export class DbAuthentication implements Authentication {
@@ -12,7 +11,6 @@ export class DbAuthentication implements Authentication {
     private readonly loadAccountByEmailRepo: LoadAccountByEmailRepository,
     private readonly hashComparer: HashComparer,
     private readonly tokenGenerator: TokenGenerator,
-    private readonly updateAccessTokenRepo: UpdateAccessTokenRepository,
   ) {}
 
   async auth (authentication: AuthenticationModel): Promise<string> {
@@ -25,8 +23,6 @@ export class DbAuthentication implements Authentication {
     if (!passwordIsValid) return null;
 
     const accessToken = this.tokenGenerator.generate(account.id);
-
-    await this.updateAccessTokenRepo.updateAccessToken(account.id, accessToken);
 
     return accessToken;
   }
