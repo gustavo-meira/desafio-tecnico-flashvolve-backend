@@ -21,7 +21,7 @@ describe('CompareFields Validation', () => {
       [fieldName]: chance.word(),
       [fieldToCompareName]: chance.word(),
     });
-    expect(error).toEqual(new InvalidParamError(fieldToCompareName));
+    expect(error).toEqual(new InvalidParamError(fieldName));
   });
 
   it('Should return falsy if validation succeeds', () => {
