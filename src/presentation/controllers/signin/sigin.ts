@@ -1,16 +1,14 @@
-import { MissingParamError, InvalidParamError } from '@/presentation/errors';
+import { MissingParamError } from '@/presentation/errors';
 import {
   type HttpRequest,
   type HttpResponse,
   type Controller,
-  type EmailValidator,
   type Authentication,
 } from './siginProtocols';
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/httpHelpers';
 
 export class SignInController implements Controller {
   constructor (
-    private readonly emailValidator: EmailValidator,
     private readonly authentication: Authentication,
   ) {}
 
@@ -22,12 +20,6 @@ export class SignInController implements Controller {
         if (!httpRequest.body[field]) {
           return badRequest(new MissingParamError(field));
         }
-      }
-
-      const isEmailValid = this.emailValidator.isValid(httpRequest.body.email);
-
-      if (!isEmailValid) {
-        return badRequest(new InvalidParamError('email'));
       }
 
       const accessToken = await this.authentication.auth(httpRequest.body);
