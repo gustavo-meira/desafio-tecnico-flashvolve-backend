@@ -11,6 +11,9 @@ jest.mock('bcrypt', () => ({
     await new Promise((resolve) => setTimeout(resolve, 1));
     return hashedValue;
   },
+  async compare (): Promise<boolean> {
+    return await Promise.resolve(true);
+  },
 }));
 
 const makeSut = (salt = 12): BcryptAdapter => {
@@ -20,7 +23,7 @@ const makeSut = (salt = 12): BcryptAdapter => {
 };
 
 describe('Bcrypt Adapter', () => {
-  it('Should call bcrypt with correct values', async () => {
+  it('Should call hash with correct values', async () => {
     const salt = 12;
     const sut = makeSut(salt);
     const hashSpy = jest.spyOn(bcrypt, 'hash');
@@ -30,7 +33,7 @@ describe('Bcrypt Adapter', () => {
     expect(hashSpy).toHaveBeenCalledWith(valueToHash, salt);
   });
 
-  it('Should return a hash on success', async () => {
+  it('Should return a hash on hash success', async () => {
     const sut = makeSut();
 
     const hash = await sut.hash(chance.string());
@@ -45,5 +48,15 @@ describe('Bcrypt Adapter', () => {
 
     const promise = sut.hash(chance.string());
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should call compare with correct values', async () => {
+    const sut = makeSut();
+    const compareSpy = jest.spyOn(bcrypt, 'compare');
+    const valueToCompare = chance.string();
+    const hash = chance.string();
+
+    await sut.compare(valueToCompare, hash);
+    expect(compareSpy).toHaveBeenCalledWith(valueToCompare, hash);
   });
 });
