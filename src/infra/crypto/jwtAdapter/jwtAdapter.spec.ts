@@ -8,8 +8,8 @@ const signedValue = chance.string();
 const jwtSecret = chance.string();
 
 jest.mock('jsonwebtoken', () => ({
-  sign: async (): Promise<string> => {
-    return await Promise.resolve(signedValue);
+  sign: (): string => {
+    return signedValue;
   },
 }));
 
@@ -21,5 +21,12 @@ describe('Jwt Adapter', () => {
 
     sut.generate(valueToSign);
     expect(signSpy).toHaveBeenCalledWith({ id: valueToSign }, jwtSecret);
+  });
+
+  it('Should return a token on sign success', () => {
+    const sut = new JwtAdapter(jwtSecret);
+
+    const token = sut.generate(chance.string());
+    expect(token).toBe(signedValue);
   });
 });
