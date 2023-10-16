@@ -1,5 +1,5 @@
 import { ValidationBuilder as sut } from './validationBuilder';
-import { RequiredFieldValidation } from '..';
+import { RequiredFieldValidation, CompareFieldsValidation } from '..';
 import { Chance } from 'chance';
 
 const chance = new Chance();
@@ -11,5 +11,12 @@ describe('ValidationBuilder', () => {
     const validations = sut.field(fieldName).required().build();
 
     expect(validations).toEqual([new RequiredFieldValidation(fieldName)]);
+  });
+
+  it('Should return CompareFieldsValidation', () => {
+    const fieldToCompare = chance.word();
+    const validations = sut.field(fieldName).sameAs(fieldToCompare).build();
+
+    expect(validations).toEqual([new CompareFieldsValidation(fieldName, fieldToCompare)]);
   });
 });
