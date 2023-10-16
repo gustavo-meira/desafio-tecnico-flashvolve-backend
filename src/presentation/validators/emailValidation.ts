@@ -5,10 +5,18 @@ export class EmailValidation implements Validation {
   constructor (private readonly fieldName: string) {}
 
   validate (input: InputValidation): Error | null {
-    if (!input[this.fieldName]) {
+    const email = input[this.fieldName] as string;
+
+    if (!email) {
       return null;
     }
 
-    return new InvalidParamError(this.fieldName);
+    const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+    if (!emailRegex.test(email)) {
+      return new InvalidParamError(this.fieldName);
+    }
+
+    return null;
   }
 }
