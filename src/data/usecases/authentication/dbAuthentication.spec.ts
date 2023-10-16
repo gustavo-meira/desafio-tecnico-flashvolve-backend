@@ -2,6 +2,7 @@ import { type AccountModel } from '@/domain/models/account';
 import { DbAuthentication } from './dbAuthentication';
 import Chance from 'chance';
 import { type LoadAccountByEmailRepository } from '@/data/protocols/loadAccountByEmailRepository';
+import { type HashComparer } from '@/data/protocols/hashCompare';
 
 const chance = new Chance();
 
@@ -13,6 +14,7 @@ const accountToFind = {
 const accountToReturn: AccountModel = {
   id: chance.guid(),
   name: chance.name(),
+  password: chance.string(),
   ...accountToFind,
 };
 
@@ -26,18 +28,31 @@ const makeLoadAccountByEmailRepo = (): LoadAccountByEmailRepository => {
   return new LoadAccountByEmailRepoStub();
 };
 
+const makeHashComparer = (): HashComparer => {
+  class HashCompareStub implements HashComparer {
+    async compare (value: string, hash: string): Promise<boolean> {
+      return await Promise.resolve(true);
+    }
+  }
+
+  return new HashCompareStub();
+};
+
 interface SutType {
   sut: DbAuthentication;
   loadAccountByEmailRepo: LoadAccountByEmailRepository;
+  hashComparerStub: HashComparer;
 };
 
 const makeSut = (): SutType => {
   const loadAccountByEmailRepo = makeLoadAccountByEmailRepo();
-  const sut = new DbAuthentication(loadAccountByEmailRepo);
+  const hashComparerStub = makeHashComparer();
+  const sut = new DbAuthentication(loadAccountByEmailRepo, hashComparerStub);
 
   return {
     sut,
     loadAccountByEmailRepo,
+    hashComparerStub,
   };
 };
 
@@ -64,5 +79,13 @@ describe('DBAuthentication UseCase', () => {
 
     const accessToken = await sut.auth(accountToFind);
     expect(accessToken).toBeNull();
+  });
+
+  it('Should call HashCompare with correct values', async () => {
+    const { sut, hashComparerStub } = makeSut();
+    const compareSpy = jest.spyOn(hashComparerStub, 'compare');
+
+    await sut.auth(accountToFind);
+    expect(compareSpy).toHaveBeenCalledWith(accountToFind.password, accountToReturn.password);
   });
 });
