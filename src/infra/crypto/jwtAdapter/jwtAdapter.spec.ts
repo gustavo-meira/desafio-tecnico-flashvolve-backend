@@ -29,4 +29,13 @@ describe('Jwt Adapter', () => {
     const token = sut.generate(chance.string());
     expect(token).toBe(signedValue);
   });
+
+  it('Should throw if sign throws', () => {
+    const sut = new JwtAdapter(jwtSecret);
+    jest.spyOn(jwt, 'sign').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    expect(sut.generate).toThrow();
+  });
 });
