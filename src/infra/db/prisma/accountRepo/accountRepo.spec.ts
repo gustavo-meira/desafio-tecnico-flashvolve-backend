@@ -73,6 +73,14 @@ describe('AccountPrisma Repository', () => {
     expect(account).toEqual(accountDataWithId);
   });
 
+  it('Should return null if loadByEmail fails', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findUnique').mockResolvedValueOnce(null);
+
+    const account = await sut.loadByEmail(accountData.email);
+    expect(account).toBeNull();
+  });
+
   it('Should call prisma with correct values on loadByEmail', async () => {
     const sut = makeSut();
     const findUniqueSpy = jest.spyOn(prismaDB.user, 'findUnique');
