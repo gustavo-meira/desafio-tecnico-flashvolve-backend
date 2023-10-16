@@ -140,4 +140,11 @@ describe('DBAuthentication UseCase', () => {
     const promise = sut.auth(accountToFind);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a token on success', async () => {
+    const { sut } = makeSut();
+
+    const accessToken = await sut.auth(accountToFind);
+    expect(accessToken).toBe(token);
+  });
 });
