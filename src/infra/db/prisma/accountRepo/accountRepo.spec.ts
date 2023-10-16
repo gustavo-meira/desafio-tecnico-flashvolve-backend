@@ -23,6 +23,11 @@ jest.mock('../lib/db', () => ({
 
         return accountDataWithId;
       },
+      async findUnique () {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return accountDataWithId;
+      },
     },
   },
 }));
@@ -34,7 +39,7 @@ const makeSut = (): AccountPrismaRepo => {
 };
 
 describe('AccountPrisma Repository', () => {
-  it('Should call prisma with correct values', async () => {
+  it('Should call prisma with correct values on add', async () => {
     const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.user, 'create');
 
@@ -44,14 +49,14 @@ describe('AccountPrisma Repository', () => {
     });
   });
 
-  it('Should return an account on success', async () => {
+  it('Should return an account on add success', async () => {
     const sut = makeSut();
 
     const account = await sut.add(accountData);
     expect(account).toEqual(accountDataWithId);
   });
 
-  it('Should throw if prisma throw', async () => {
+  it('Should throw if prisma create throw', async () => {
     const sut = makeSut();
     jest.spyOn(prismaDB.user, 'create').mockImplementationOnce(() => {
       throw new Error();
@@ -59,5 +64,12 @@ describe('AccountPrisma Repository', () => {
 
     const promise = sut.add(accountData);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return an account on loadByEmail success', async () => {
+    const sut = makeSut();
+
+    const account = await sut.loadByEmail(accountData.email);
+    expect(account).toEqual(accountDataWithId);
   });
 });
