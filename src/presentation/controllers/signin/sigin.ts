@@ -1,4 +1,3 @@
-import { MissingParamError } from '@/presentation/errors';
 import {
   type HttpRequest,
   type HttpResponse,
@@ -16,14 +15,6 @@ export class SignInController implements Controller {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['password', 'email'];
-
-      for (const field of requiredFields) {
-        if (!httpRequest.body[field]) {
-          return badRequest(new MissingParamError(field));
-        }
-      }
-
       const error = this.validation.validate(httpRequest.body);
 
       if (error) {

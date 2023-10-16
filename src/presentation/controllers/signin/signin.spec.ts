@@ -56,28 +56,6 @@ const makeSut = (): SutTypes => {
 };
 
 describe('SignIn Controller', () => {
-  it('Should return 400 if no email is provided', async () => {
-    const { sut } = makeSut();
-
-    const httpResponse = await sut.handle({
-      body: {
-        password: signInAccount.password,
-      },
-    });
-    expect(httpResponse).toEqual(badRequest(new MissingParamError('email')));
-  });
-
-  it('Should return 400 if no password is provided', async () => {
-    const { sut } = makeSut();
-
-    const httpResponse = await sut.handle({
-      body: {
-        email: signInAccount.email,
-      },
-    });
-    expect(httpResponse).toEqual(badRequest(new MissingParamError('password')));
-  });
-
   it('Should call Authentication with correct values', async () => {
     const { sut, authenticationStub } = makeSut();
     const authSpy = jest.spyOn(authenticationStub, 'auth');
