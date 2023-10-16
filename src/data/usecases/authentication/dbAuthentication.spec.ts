@@ -4,6 +4,7 @@ import Chance from 'chance';
 import { type LoadAccountByEmailRepository } from '@/data/protocols/loadAccountByEmailRepository';
 import { type HashComparer } from '@/data/protocols/hashCompare';
 import { type TokenGenerator } from '@/data/protocols/tokenGenerator';
+import { type UpdateAccessTokenRepository } from '@/data/protocols/updateAccessTokenRepository';
 
 const chance = new Chance();
 
@@ -51,21 +52,34 @@ const makeTokenGenerator = (): TokenGenerator => {
   return new TokenGeneratorStub();
 };
 
+const makeUpdateAccessTokenRepo = (): UpdateAccessTokenRepository => {
+  class UpdateAccessTokenRepoStub implements UpdateAccessTokenRepository {
+    async update (id: string, token: string): Promise<void> {
+      await Promise.resolve();
+    }
+  }
+
+  return new UpdateAccessTokenRepoStub();
+};
+
 interface SutType {
   sut: DbAuthentication;
   loadAccountByEmailRepo: LoadAccountByEmailRepository;
   hashComparerStub: HashComparer;
   tokenGeneratorStub: TokenGenerator;
+  updateAccessTokenRepoStub: UpdateAccessTokenRepository;
 };
 
 const makeSut = (): SutType => {
   const loadAccountByEmailRepo = makeLoadAccountByEmailRepo();
   const hashComparerStub = makeHashComparer();
   const tokenGeneratorStub = makeTokenGenerator();
+  const updateAccessTokenRepoStub = makeUpdateAccessTokenRepo();
   const sut = new DbAuthentication(
     loadAccountByEmailRepo,
     hashComparerStub,
     tokenGeneratorStub,
+    updateAccessTokenRepoStub,
   );
 
   return {
@@ -73,6 +87,7 @@ const makeSut = (): SutType => {
     loadAccountByEmailRepo,
     hashComparerStub,
     tokenGeneratorStub,
+    updateAccessTokenRepoStub,
   };
 };
 
@@ -146,5 +161,13 @@ describe('DBAuthentication UseCase', () => {
 
     const accessToken = await sut.auth(accountToFind);
     expect(accessToken).toBe(token);
+  });
+
+  it('Should call UpdateAccessTokenRepo with correct values', async () => {
+    const { sut, updateAccessTokenRepoStub } = makeSut();
+    const updateSpy = jest.spyOn(updateAccessTokenRepoStub, 'update');
+
+    await sut.auth(accountToFind);
+    expect(updateSpy).toHaveBeenCalledWith(accountToReturn.id, token);
   });
 });
