@@ -21,4 +21,13 @@ describe('Email Validation', () => {
     });
     expect(error).toEqual(new InvalidParamError(fieldName));
   });
+
+  it('Should return falsy if email is empty', () => {
+    const sut = makeSut();
+
+    const error = sut.validate({
+      [fieldName]: '',
+    });
+    expect(error).toBeFalsy();
+  });
 });
