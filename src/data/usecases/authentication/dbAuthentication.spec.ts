@@ -1,10 +1,12 @@
-import { type AccountModel } from '@/domain/models/account';
 import { DbAuthentication } from './dbAuthentication';
+import {
+  type AccountModel,
+  type LoadAccountByEmailRepository,
+  type HashComparer,
+  type TokenGenerator,
+  type UpdateAccessTokenRepository,
+} from './dbAuthenticationProtocols';
 import Chance from 'chance';
-import { type LoadAccountByEmailRepository } from '@/data/protocols/loadAccountByEmailRepository';
-import { type HashComparer } from '@/data/protocols/hashCompare';
-import { type TokenGenerator } from '@/data/protocols/tokenGenerator';
-import { type UpdateAccessTokenRepository } from '@/data/protocols/updateAccessTokenRepository';
 
 const chance = new Chance();
 
