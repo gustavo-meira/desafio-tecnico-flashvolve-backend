@@ -70,4 +70,15 @@ describe('SignUp Routes', () => {
       })
       .expect(400);
   });
+
+  it('Should return a 400 if no passwordConfirmation is provided', async () => {
+    await request(app)
+      .post('/api/signup')
+      .send({
+        name: accountData.name,
+        email: accountData.email,
+        password: accountData.password,
+      })
+      .expect(400);
+  });
 });
