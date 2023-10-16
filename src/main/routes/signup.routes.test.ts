@@ -81,4 +81,14 @@ describe('SignUp Routes', () => {
       })
       .expect(400);
   });
+
+  it('Should return a 400 if passwordConfirmation fails', async () => {
+    await request(app)
+      .post('/api/signup')
+      .send({
+        ...accountData,
+        passwordConfirmation: chance.string(),
+      })
+      .expect(400);
+  });
 });
