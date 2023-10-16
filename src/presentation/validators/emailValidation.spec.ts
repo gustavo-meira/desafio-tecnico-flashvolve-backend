@@ -30,4 +30,13 @@ describe('Email Validation', () => {
     });
     expect(error).toBeFalsy();
   });
+
+  it('Should return falsy if validation succeeds', () => {
+    const sut = makeSut();
+
+    const error = sut.validate({
+      [fieldName]: chance.email(),
+    });
+    expect(error).toBeFalsy();
+  });
 });
