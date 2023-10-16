@@ -170,4 +170,12 @@ describe('DBAuthentication UseCase', () => {
     await sut.auth(accountToFind);
     expect(updateSpy).toHaveBeenCalledWith(accountToReturn.id, token);
   });
+
+  it('Should throw if UpdateAccessTokenRepo throws', async () => {
+    const { sut, updateAccessTokenRepoStub } = makeSut();
+    jest.spyOn(updateAccessTokenRepoStub, 'update').mockRejectedValueOnce(new Error());
+
+    const promise = sut.auth(accountToFind);
+    await expect(promise).rejects.toThrow();
+  });
 });
