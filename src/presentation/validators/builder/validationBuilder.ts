@@ -1,4 +1,4 @@
-import { RequiredFieldValidation, type Validation } from '..';
+import { CompareFieldsValidation, RequiredFieldValidation, type Validation } from '..';
 
 export class ValidationBuilder {
   constructor (
@@ -16,6 +16,11 @@ export class ValidationBuilder {
 
   required (): ValidationBuilder {
     this.validations.push(new RequiredFieldValidation(this.fieldName));
+    return this;
+  }
+
+  sameAs (fieldToCompare: string): ValidationBuilder {
+    this.validations.push(new CompareFieldsValidation(this.fieldName, fieldToCompare));
     return this;
   }
 }
