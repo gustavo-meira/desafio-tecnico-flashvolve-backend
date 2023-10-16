@@ -26,7 +26,7 @@ const token = chance.string();
 
 const makeLoadAccountByEmailRepo = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepoStub implements LoadAccountByEmailRepository {
-    async load (email: string): Promise<AccountModel> {
+    async loadByEmail (email: string): Promise<AccountModel> {
       return await new Promise(resolve => { resolve(accountToReturn); });
     }
   }
@@ -56,7 +56,7 @@ const makeTokenGenerator = (): TokenGenerator => {
 
 const makeUpdateAccessTokenRepo = (): UpdateAccessTokenRepository => {
   class UpdateAccessTokenRepoStub implements UpdateAccessTokenRepository {
-    async update (id: string, token: string): Promise<void> {
+    async updateAccessToken (id: string, token: string): Promise<void> {
       await Promise.resolve();
     }
   }
@@ -96,7 +96,7 @@ const makeSut = (): SutType => {
 describe('DBAuthentication UseCase', () => {
   it('Should call LoadAccountByEmailRepo with correct email', async () => {
     const { sut, loadAccountByEmailRepo } = makeSut();
-    const loadSpy = jest.spyOn(loadAccountByEmailRepo, 'load');
+    const loadSpy = jest.spyOn(loadAccountByEmailRepo, 'loadByEmail');
 
     await sut.auth(accountToFind);
     expect(loadSpy).toHaveBeenCalledWith(accountToFind.email);
@@ -104,7 +104,7 @@ describe('DBAuthentication UseCase', () => {
 
   it('Should throw if LoadAccountByEmailRepo throws', async () => {
     const { sut, loadAccountByEmailRepo } = makeSut();
-    jest.spyOn(loadAccountByEmailRepo, 'load').mockRejectedValueOnce(new Error());
+    jest.spyOn(loadAccountByEmailRepo, 'loadByEmail').mockRejectedValueOnce(new Error());
 
     const promise = sut.auth(accountToFind);
     await expect(promise).rejects.toThrow();
@@ -112,7 +112,7 @@ describe('DBAuthentication UseCase', () => {
 
   it('Should return null if LoadAccountByEmailRepo returns null', async () => {
     const { sut, loadAccountByEmailRepo } = makeSut();
-    jest.spyOn(loadAccountByEmailRepo, 'load').mockResolvedValueOnce(null);
+    jest.spyOn(loadAccountByEmailRepo, 'loadByEmail').mockResolvedValueOnce(null);
 
     const accessToken = await sut.auth(accountToFind);
     expect(accessToken).toBeNull();
@@ -169,7 +169,7 @@ describe('DBAuthentication UseCase', () => {
 
   it('Should call UpdateAccessTokenRepo with correct values', async () => {
     const { sut, updateAccessTokenRepoStub } = makeSut();
-    const updateSpy = jest.spyOn(updateAccessTokenRepoStub, 'update');
+    const updateSpy = jest.spyOn(updateAccessTokenRepoStub, 'updateAccessToken');
 
     await sut.auth(accountToFind);
     expect(updateSpy).toHaveBeenCalledWith(accountToReturn.id, token);
@@ -177,7 +177,7 @@ describe('DBAuthentication UseCase', () => {
 
   it('Should throw if UpdateAccessTokenRepo throws', async () => {
     const { sut, updateAccessTokenRepoStub } = makeSut();
-    jest.spyOn(updateAccessTokenRepoStub, 'update').mockRejectedValueOnce(new Error());
+    jest.spyOn(updateAccessTokenRepoStub, 'updateAccessToken').mockRejectedValueOnce(new Error());
 
     const promise = sut.auth(accountToFind);
     await expect(promise).rejects.toThrow();
