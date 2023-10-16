@@ -24,7 +24,11 @@ export class SignInController implements Controller {
         }
       }
 
-      this.validation.validate(httpRequest.body);
+      const error = this.validation.validate(httpRequest.body);
+
+      if (error) {
+        return badRequest(error);
+      }
 
       const accessToken = await this.authentication.auth(httpRequest.body);
 
