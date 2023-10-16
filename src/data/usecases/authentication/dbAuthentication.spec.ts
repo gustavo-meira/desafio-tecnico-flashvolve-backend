@@ -96,4 +96,12 @@ describe('DBAuthentication UseCase', () => {
     const promise = sut.auth(accountToFind);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return null if HashComparer return false', async () => {
+    const { sut, hashComparerStub } = makeSut();
+    jest.spyOn(hashComparerStub, 'compare').mockResolvedValueOnce(false);
+
+    const accessToken = await sut.auth(accountToFind);
+    expect(accessToken).toBeNull();
+  });
 });
