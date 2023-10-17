@@ -4,6 +4,7 @@ import { type AddMessageRepository } from '@/data/protocols/addMessageRepository
 import { type AddMessageModel } from '@/domain/useCases/addMessage';
 import { type MessageModel } from '@/domain/models/message';
 import Chance from 'chance';
+import { serverError } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -64,5 +65,14 @@ describe('MessageReceiver Controller', () => {
 
     await sut.handle(httpRequest);
     expect(addSpy).toHaveBeenCalledWith(httpRequest.body);
+  });
+
+  it('Should return 500 if AddMessageRepository throws', async () => {
+    const { sut, addMessageRepositoryStub } = makeSut();
+    jest.spyOn(addMessageRepositoryStub, 'add').mockRejectedValueOnce(new Error());
+    const httpRequest = makeHttpRequest();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(serverError());
   });
 });
