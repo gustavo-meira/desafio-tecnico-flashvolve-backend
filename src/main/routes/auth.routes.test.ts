@@ -141,4 +141,17 @@ describe('Auth Routes', () => {
         })
         .expect(400);
     });
+
+    it('Should return a 200 on SignIn success', async () => {
+      const response = await request(app)
+        .post('/api/signin')
+        .send({
+          email: accountData.email,
+          password: accountData.password,
+        })
+        .expect(200);
+
+      expect(response.body.accessToken).toBeTruthy();
+    });
+  });
 });
