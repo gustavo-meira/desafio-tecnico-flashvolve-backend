@@ -6,8 +6,8 @@ export class DbAddMessage implements AddMessage {
   constructor (private readonly addMessageRepository: AddMessageRepository) {}
 
   async add (messageData: AddMessageModel): Promise<MessageModel> {
-    await this.addMessageRepository.add(messageData);
+    const message = await this.addMessageRepository.add(messageData);
 
-    return null;
+    return message;
   }
 }
