@@ -4,7 +4,7 @@ import { type AddMessageRepository } from '@/data/protocols/addMessageRepository
 import { type AddMessageModel } from '@/domain/useCases/addMessage';
 import { type MessageModel } from '@/domain/models/message';
 import Chance from 'chance';
-import { serverError } from '@/presentation/helpers/httpHelpers';
+import { ok, serverError } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -74,5 +74,13 @@ describe('MessageReceiver Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should return 200 if AddMessageRepository succeeds', async () => {
+    const { sut } = makeSut();
+    const httpRequest = makeHttpRequest();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(ok(messageToResponse));
   });
 });
