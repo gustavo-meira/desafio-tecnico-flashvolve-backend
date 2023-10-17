@@ -71,4 +71,11 @@ describe('MessagePrisma Repo', () => {
     const promise = sut.add(messageData);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return the created message on success', async () => {
+    const sut = makeSut();
+    const message = await sut.add(messageData);
+
+    expect(message).toEqual(messageToResponse);
+  });
 });
