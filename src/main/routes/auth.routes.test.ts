@@ -131,4 +131,14 @@ describe('Auth Routes', () => {
         })
         .expect(400);
     });
+
+    it('Should return a 400 if an invalid email is provided on SignIn', async () => {
+      await request(app)
+        .post('/api/signin')
+        .send({
+          email: chance.word(),
+          password: accountData.password,
+        })
+        .expect(400);
+    });
 });
