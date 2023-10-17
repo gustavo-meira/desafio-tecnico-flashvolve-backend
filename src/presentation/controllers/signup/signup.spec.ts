@@ -93,13 +93,16 @@ describe('SignUp Controller', () => {
     expect(addSpy).toHaveBeenCalledWith(validAccount);
   });
 
-  it('Should return 201 if valid data is provided', async () => {
+  it('Should return 201 if valid data is provided and not return the password and id', async () => {
     const { sut } = makeSut();
     const httpRequest = makeHttpRequest();
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(201);
-    expect(httpResponse.body).toEqual(validAccountResponse);
+    expect(httpResponse.body).toEqual({
+      name: validAccountResponse.name,
+      email: validAccountResponse.email,
+    });
   });
 
   it('Should call Validation with correct values', async () => {
