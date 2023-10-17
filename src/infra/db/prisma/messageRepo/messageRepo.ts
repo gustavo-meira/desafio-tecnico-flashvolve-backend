@@ -5,7 +5,7 @@ import { type AddMessageModel } from '@/domain/useCases/addMessage';
 
 export class MessagePrismaRepo implements AddMessageRepository {
   async add (messageData: AddMessageModel): Promise<MessageModel> {
-    await prismaDB.message.create({
+    const message = await prismaDB.message.create({
       data: {
         senderName: messageData.senderName,
         text: messageData.text,
@@ -24,6 +24,6 @@ export class MessagePrismaRepo implements AddMessageRepository {
       },
     });
 
-    return null;
+    return message;
   }
 }
