@@ -14,3 +14,29 @@ model User {
   email    String @unique
   password String
 }
+
+model Chat {
+  id Int @id @default(autoincrement())
+
+  name        String
+  lastMessage String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+
+  text       String
+  senderName String
+  fromBot    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Chat   Chat @relation(fields: [chatId], references: [id])
+  chatId Int
+}
