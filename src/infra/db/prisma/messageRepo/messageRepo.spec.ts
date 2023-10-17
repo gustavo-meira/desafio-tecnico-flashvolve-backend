@@ -63,4 +63,12 @@ describe('MessagePrisma Repo', () => {
       },
     });
   });
+
+  it('Should throw if prisma throws', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.message, 'create').mockRejectedValueOnce(new Error());
+
+    const promise = sut.add(messageData);
+    await expect(promise).rejects.toThrow();
+  });
 });
