@@ -1,5 +1,5 @@
 import { type AddMessageRepository } from '@/data/protocols/addMessageRepository';
-import { serverError } from '@/presentation/helpers/httpHelpers';
+import { ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type Controller, type HttpRequest, type HttpResponse } from '@/presentation/protocols';
 
 export class MessageReceiverController implements Controller {
@@ -7,9 +7,9 @@ export class MessageReceiverController implements Controller {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      await this.addMessageRepository.add(httpRequest.body);
+      const message = await this.addMessageRepository.add(httpRequest.body);
 
-      return null;
+      return ok(message);
     } catch (error) {
       return serverError();
     }
