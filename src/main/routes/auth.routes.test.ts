@@ -122,4 +122,13 @@ describe('Auth Routes', () => {
         })
         .expect(400);
     });
+
+    it('Should return a 400 if no password is provided on SignIn', async () => {
+      await request(app)
+        .post('/api/signin')
+        .send({
+          email: accountData.email,
+        })
+        .expect(400);
+    });
 });
