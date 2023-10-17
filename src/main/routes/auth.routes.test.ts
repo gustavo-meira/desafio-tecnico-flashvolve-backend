@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../config/app';
 import Chance from 'chance';
+import bcrypt from 'bcrypt';
 
 const chance = new Chance();
 
@@ -22,6 +23,14 @@ jest.mock('../../infra/db/prisma/lib/db', () => ({
         await new Promise((resolve) => setTimeout(resolve, 1));
 
         return accountDataWithId;
+      },
+      async findUnique () {
+        const hashedPassword = await bcrypt.hash(accountData.password, 12);
+
+        return {
+          ...accountDataWithId,
+          password: hashedPassword,
+        };
       },
     },
   },
@@ -103,4 +112,14 @@ describe('Auth Routes', () => {
         .expect(400);
     });
   });
+
+  describe('POST /api/signin', () => {
+    it('Should return a 400 if no email is provided on SignIn', async () => {
+      await request(app)
+        .post('/api/signin')
+        .send({
+          password: accountData.password,
+        })
+        .expect(400);
+    });
 });
