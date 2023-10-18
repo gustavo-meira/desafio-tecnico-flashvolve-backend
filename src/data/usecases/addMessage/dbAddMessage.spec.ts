@@ -3,6 +3,9 @@ import { type MessageModel } from '@/domain/models/message';
 import { type AddMessageModel } from '@/domain/useCases/addMessage';
 import Chance from 'chance';
 import { DbAddMessage } from './dbAddMessage';
+import { type AddChatRepository } from '@/data/protocols/addChatRepository';
+import { type AddChatModel } from '@/domain/useCases/addChat';
+import { type ChatModel } from '@/domain/models/chat';
 
 const chance = new Chance();
 
@@ -20,6 +23,28 @@ const messageToResponse: MessageModel = {
   updatedAt: chance.date(),
 };
 
+const chatData: AddChatModel = {
+  id: messageData.chatId,
+  lastMessage: messageData.text,
+  name: messageData.senderName,
+};
+
+const chatToResponse: ChatModel = {
+  ...chatData,
+  createdAt: chance.date(),
+  updatedAt: chance.date(),
+};
+
+const makeAddChatRepository = (): AddChatRepository => {
+  class AddChatRepositoryStub implements AddChatRepository {
+    async add (chatData: AddChatModel): Promise<ChatModel> {
+      return await Promise.resolve(chatToResponse);
+    }
+  }
+
+  return new AddChatRepositoryStub();
+};
+
 const makeAddMessageRepository = (): AddMessageRepository => {
   class AddMessageRepositoryStub implements AddMessageRepository {
     async add (messageData: AddMessageModel): Promise<MessageModel> {
@@ -33,15 +58,18 @@ const makeAddMessageRepository = (): AddMessageRepository => {
 interface SutTypes {
   sut: DbAddMessage;
   addMessageRepositoryStub: AddMessageRepository;
+  addChatRepositoryStub: AddChatRepository;
 }
 
 const makeSut = (): SutTypes => {
   const addMessageRepositoryStub = makeAddMessageRepository();
-  const sut = new DbAddMessage(addMessageRepositoryStub);
+  const addChatRepositoryStub = makeAddChatRepository();
+  const sut = new DbAddMessage(addMessageRepositoryStub, addChatRepositoryStub);
 
   return {
     sut,
     addMessageRepositoryStub,
+    addChatRepositoryStub,
   };
 };
 
@@ -67,5 +95,13 @@ describe('DbAddMessage UseCase', () => {
 
     const message = await sut.add(messageData);
     expect(message).toEqual(messageToResponse);
+  });
+
+  it('Should call AddChatRepository with correct values', async () => {
+    const { sut, addChatRepositoryStub } = makeSut();
+    const addSpy = jest.spyOn(addChatRepositoryStub, 'add');
+
+    await sut.add(messageData);
+    expect(addSpy).toHaveBeenCalledWith(chatData);
   });
 });
