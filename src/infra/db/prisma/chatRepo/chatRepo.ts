@@ -5,7 +5,7 @@ import { prismaDB } from '../lib/db';
 
 export class ChatPrismaRepo implements AddChatRepository {
   async add (chatData: AddChatModel): Promise<ChatModel> {
-    await prismaDB.chat.upsert({
+    const chat = await prismaDB.chat.upsert({
       create: {
         id: BigInt(chatData.id),
         name: chatData.name,
@@ -19,6 +19,9 @@ export class ChatPrismaRepo implements AddChatRepository {
       },
     });
 
-    return null;
+    return {
+      ...chat,
+      id: Number(chat.id),
+    };
   }
 }
