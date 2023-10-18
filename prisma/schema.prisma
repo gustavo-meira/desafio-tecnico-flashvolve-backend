@@ -16,7 +16,7 @@ model User {
 }
 
 model Chat {
-  id Int @id @default(autoincrement())
+  id BigInt @id @default(autoincrement())
 
   name        String
   lastMessage String
@@ -28,7 +28,7 @@ model Chat {
 }
 
 model Message {
-  id Int @id @default(autoincrement())
+  id BigInt @id @default(autoincrement())
 
   text       String
   senderName String
@@ -37,6 +37,6 @@ model Message {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Chat   Chat @relation(fields: [chatId], references: [id])
-  chatId Int
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId BigInt
 }
