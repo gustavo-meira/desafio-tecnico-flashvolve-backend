@@ -67,4 +67,11 @@ describe('ChatPrisma Repo', () => {
     const promise = sut.add(chatData);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a chat on success', async () => {
+    const sut = makeSut();
+
+    const chat = await sut.add(chatData);
+    expect(chat).toEqual(chatToResponse);
+  });
 });
