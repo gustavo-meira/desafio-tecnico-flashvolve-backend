@@ -59,4 +59,12 @@ describe('ChatPrisma Repo', () => {
       },
     });
   });
+
+  it('Should throw if prisma throws', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.chat, 'upsert').mockRejectedValueOnce(new Error());
+
+    const promise = sut.add(chatData);
+    await expect(promise).rejects.toThrow();
+  });
 });
