@@ -10,20 +10,14 @@ export class MessagePrismaRepo implements AddMessageRepository {
         senderName: messageData.senderName,
         text: messageData.text,
         fromBot: messageData.fromBot,
-        Chat: {
-          connectOrCreate: {
-            where: {
-              id: messageData.chatId,
-            },
-            create: {
-              lastMessage: messageData.text,
-              name: messageData.senderName,
-            },
-          },
-        },
+        chatId: BigInt(messageData.chatId),
       },
     });
 
-    return message;
+    return {
+      ...message,
+      id: Number(message.id),
+      chatId: Number(message.chatId),
+    };
   }
 }

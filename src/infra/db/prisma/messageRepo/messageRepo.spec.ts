@@ -26,7 +26,11 @@ jest.mock('../lib/db', () => ({
       create: async () => {
         await new Promise((resolve) => setTimeout(resolve, 1));
 
-        return messageToResponse;
+        return {
+          ...messageToResponse,
+          chatId: BigInt(messageToResponse.chatId),
+          id: BigInt(messageToResponse.id),
+        };
       },
     },
   },
@@ -49,17 +53,7 @@ describe('MessagePrisma Repo', () => {
         senderName: messageData.senderName,
         text: messageData.text,
         fromBot: messageData.fromBot,
-        Chat: {
-          connectOrCreate: {
-            where: {
-              id: messageData.chatId,
-            },
-            create: {
-              lastMessage: messageData.text,
-              name: messageData.senderName,
-            },
-          },
-        },
+        chatId: BigInt(messageData.chatId),
       },
     });
   });
