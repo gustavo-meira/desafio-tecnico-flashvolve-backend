@@ -41,6 +41,13 @@ const makeSut = (): SutTypes => {
 };
 
 describe('Auth Middleware', () => {
+  it('Should return 403 if no accessToken is provided', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle({});
+    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()));
+  });
+
   it('Should call LoadAccountByToken with correct value', async () => {
     const { sut, loadAccountByTokenStub } = makeSut();
     jest.spyOn(loadAccountByTokenStub, 'load');

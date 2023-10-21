@@ -5,7 +5,7 @@ import { forbidden } from '../helpers/httpHelpers';
 import { AccessDeniedError } from '../errors/accessDeniedError';
 
 interface AuthMiddlewareParams {
-  accessToken: string;
+  accessToken?: string;
 };
 
 export class AuthMiddleware implements Middleware<AuthMiddlewareParams> {
