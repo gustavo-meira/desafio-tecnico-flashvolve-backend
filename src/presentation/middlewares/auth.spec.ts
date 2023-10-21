@@ -2,7 +2,7 @@ import { AuthMiddleware } from './auth';
 import { type LoadAccountByToken } from '@/domain/useCases/loadAccountByToken';
 import { type AccountModel } from '../controllers/signup/signupProtocols';
 import Chance from 'chance';
-import { forbidden, serverError } from '../helpers/httpHelpers';
+import { forbidden, ok, serverError } from '../helpers/httpHelpers';
 import { AccessDeniedError } from '../errors';
 
 const chance = new Chance();
@@ -70,5 +70,12 @@ describe('Auth Middleware', () => {
 
     const httpResponse = await sut.handle({ accessToken });
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should return 200 if LoadAccountByToken returns an account', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle({ accessToken });
+    expect(httpResponse).toEqual(ok({ accountId: accountToSend.id }));
   });
 });
