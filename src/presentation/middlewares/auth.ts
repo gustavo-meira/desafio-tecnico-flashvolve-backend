@@ -1,7 +1,7 @@
 import { type LoadAccountByToken } from '@/domain/useCases/loadAccountByToken';
 import { type HttpResponse } from '../protocols';
 import { type Middleware } from '../protocols/middleware';
-import { forbidden, serverError } from '../helpers/httpHelpers';
+import { forbidden, ok, serverError } from '../helpers/httpHelpers';
 import { AccessDeniedError } from '../errors';
 
 interface AuthMiddlewareParams {
@@ -15,7 +15,13 @@ export class AuthMiddleware implements Middleware<AuthMiddlewareParams> {
 
   async handle (request: AuthMiddlewareParams): Promise<HttpResponse> {
     try {
-      await this.loadAccountByToken.load(request.accessToken);
+      if (request.accessToken) {
+        const account = await this.loadAccountByToken.load(request.accessToken);
+
+        if (account) {
+          return ok({ accountId: account.id });
+        }
+      }
 
       return forbidden(new AccessDeniedError());
     } catch (error) {
