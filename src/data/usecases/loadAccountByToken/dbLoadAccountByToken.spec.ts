@@ -48,4 +48,12 @@ describe('DbLoadAccountByToken UseCase', () => {
     const account = await sut.load(accessToken);
     expect(account).toBeNull();
   });
+
+  it('Should throw if Decrypter throws', async () => {
+    const { sut, decrypterStub } = makeSut();
+    jest.spyOn(decrypterStub, 'decrypt').mockRejectedValueOnce(new Error());
+
+    const promise = sut.load(accessToken);
+    await expect(promise).rejects.toThrow();
+  });
 });
