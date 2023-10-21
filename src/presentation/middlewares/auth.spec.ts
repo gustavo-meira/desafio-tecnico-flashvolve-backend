@@ -3,7 +3,7 @@ import { type LoadAccountByToken } from '@/domain/useCases/loadAccountByToken';
 import { type AccountModel } from '../controllers/signup/signupProtocols';
 import Chance from 'chance';
 import { forbidden } from '../helpers/httpHelpers';
-import { AccessDeniedError } from '../errors/accessDeniedError';
+import { AccessDeniedError } from '../errors';
 
 const chance = new Chance();
 

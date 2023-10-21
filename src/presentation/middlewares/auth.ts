@@ -2,7 +2,7 @@ import { type LoadAccountByToken } from '@/domain/useCases/loadAccountByToken';
 import { type HttpResponse } from '../protocols';
 import { type Middleware } from '../protocols/middleware';
 import { forbidden } from '../helpers/httpHelpers';
-import { AccessDeniedError } from '../errors/accessDeniedError';
+import { AccessDeniedError } from '../errors';
 
 interface AuthMiddlewareParams {
   accessToken?: string;
