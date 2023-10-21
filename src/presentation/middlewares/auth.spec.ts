@@ -2,6 +2,8 @@ import { AuthMiddleware } from './auth';
 import { type LoadAccountByToken } from '@/domain/useCases/loadAccountByToken';
 import { type AccountModel } from '../controllers/signup/signupProtocols';
 import Chance from 'chance';
+import { forbidden } from '../helpers/httpHelpers';
+import { AccessDeniedError } from '../errors/accessDeniedError';
 
 const chance = new Chance();
 
@@ -45,5 +47,13 @@ describe('Auth Middleware', () => {
 
     await sut.handle({ accessToken });
     expect(loadAccountByTokenStub.load).toHaveBeenCalledWith(accessToken);
+  });
+
+  it('Should return 403 if LoadAccountByToken returns null', async () => {
+    const { sut, loadAccountByTokenStub } = makeSut();
+    jest.spyOn(loadAccountByTokenStub, 'load').mockResolvedValueOnce(null);
+
+    const httpResponse = await sut.handle({ accessToken });
+    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()));
   });
 });
