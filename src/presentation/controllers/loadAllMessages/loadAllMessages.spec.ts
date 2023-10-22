@@ -3,7 +3,7 @@ import { type HttpRequest, type InputValidation, type Validation } from '../sign
 import { LoadAllMessagesController } from './loadAllMessages';
 import { type LoadMessages } from '@/domain/useCases/loadMessages';
 import Chance from 'chance';
-import { badRequest } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 import { type MessageModel } from '@/domain/models/message';
 
 const chance = new Chance();
@@ -91,5 +91,13 @@ describe('LoadAllMessages Controller', () => {
 
     await sut.handle(httpRequest);
     expect(loadSpy).toHaveBeenCalledWith(httpRequest.body.chatId);
+  });
+
+  it('Should return serverError if LoadAllMessages throws', async () => {
+    const { sut, loadMessagesStub } = makeSut();
+    jest.spyOn(loadMessagesStub, 'load').mockRejectedValueOnce(new Error());
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(serverError());
   });
 });
