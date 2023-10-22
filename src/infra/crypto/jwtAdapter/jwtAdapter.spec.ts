@@ -62,4 +62,16 @@ describe('Jwt Adapter', () => {
     const value = await sut.decrypt(tokenToReceive);
     expect(value).toBe(tokenDecrypted);
   });
+
+  it('Should return null if verify throws JSONWebTokenError', async () => {
+    const sut = makeSut();
+    jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+      const error = new Error('invalid token');
+      error.name = 'JsonWebTokenError';
+      throw error;
+    });
+
+    const value = await sut.decrypt(tokenToReceive);
+    expect(value).toBeNull();
+  });
 });
