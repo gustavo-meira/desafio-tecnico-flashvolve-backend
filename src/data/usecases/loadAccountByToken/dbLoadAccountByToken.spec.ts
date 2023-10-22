@@ -102,4 +102,11 @@ describe('DbLoadAccountByToken UseCase', () => {
     const promise = sut.load(accessToken);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return an account on success', async () => {
+    const { sut } = makeSut();
+
+    const account = await sut.load(accessToken);
+    expect(account).toEqual(accountToResponse);
+  });
 });
