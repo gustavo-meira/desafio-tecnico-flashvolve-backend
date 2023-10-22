@@ -1,6 +1,7 @@
-import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, notFound, serverError } from '@/presentation/helpers/httpHelpers';
 import { type Validation, type Controller, type HttpRequest, type HttpResponse } from '../signup/signupProtocols';
 import { type LoadMessages } from '@/domain/useCases/loadMessages';
+import { NotFoundError } from '@/presentation/errors/notFoundError';
 
 export class LoadAllMessagesController implements Controller {
   constructor (
@@ -16,7 +17,11 @@ export class LoadAllMessagesController implements Controller {
         return badRequest(error);
       }
 
-      await this.loadMessages.load(httpRequest.body.chatId);
+      const messages = await this.loadMessages.load(httpRequest.body.chatId);
+
+      if (messages.length === 0) {
+        return notFound(new NotFoundError());
+      }
 
       return null;
     } catch (error) {
