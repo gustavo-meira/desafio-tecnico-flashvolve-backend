@@ -90,4 +90,12 @@ describe('ChatPrisma Repo', () => {
     await sut.loadAll();
     expect(findManySpy).toHaveBeenCalledWith({});
   });
+
+  it('Should throw if prisma throws on loadAll', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.chat, 'findMany').mockRejectedValueOnce(new Error());
+
+    const promise = sut.loadAll();
+    await expect(promise).rejects.toThrow();
+  });
 });
