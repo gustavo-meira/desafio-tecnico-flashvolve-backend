@@ -1,4 +1,4 @@
-import { badRequest, notFound, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, notFound, ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type Validation, type Controller, type HttpRequest, type HttpResponse } from '../signup/signupProtocols';
 import { type LoadMessages } from '@/domain/useCases/loadMessages';
 import { NotFoundError } from '@/presentation/errors/notFoundError';
@@ -23,7 +23,7 @@ export class LoadAllMessagesController implements Controller {
         return notFound(new NotFoundError());
       }
 
-      return null;
+      return ok(messages);
     } catch (error) {
       return serverError();
     }
