@@ -17,7 +17,9 @@ export class AddMessageController implements Controller {
       }
 
       const message = await this.addMessage.add({
-        ...httpRequest.body,
+        senderName: httpRequest.body.name,
+        chatId: httpRequest.body.chatId,
+        text: httpRequest.body.text,
         fromBot: true,
       });
 

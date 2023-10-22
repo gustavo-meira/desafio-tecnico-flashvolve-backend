@@ -1,5 +1,5 @@
 import { badRequest, ok, serverError } from '@/presentation/helpers/httpHelpers';
-import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
+import { type AccountModel, type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { AddMessageController } from './addMessage';
 import Chance from 'chance';
 import { type AddMessageModel, type AddMessage } from '@/domain/useCases/addMessage';
@@ -7,11 +7,18 @@ import { type MessageModel } from '@/domain/models/message';
 
 const chance = new Chance();
 
+const account: AccountModel = {
+  id: chance.guid(),
+  name: chance.name(),
+  email: chance.email(),
+  password: chance.string(),
+};
+
 const httpRequest: HttpRequest = {
   body: {
     chatId: chance.integer(),
     text: chance.sentence(),
-    senderName: chance.name(),
+    ...account,
   },
 };
 
@@ -83,7 +90,9 @@ describe('AddMessage Controller', () => {
 
     await sut.handle(httpRequest);
     expect(addSpy).toHaveBeenCalledWith({
-      ...httpRequest.body,
+      senderName: httpRequest.body.name,
+      chatId: httpRequest.body.chatId,
+      text: httpRequest.body.text,
       fromBot: true,
     });
   });
