@@ -137,4 +137,11 @@ describe('AccountPrisma Repository', () => {
     const account = await sut.loadById(accountDataWithId.id);
     expect(account).toBeNull();
   });
+
+  it('Should return an account on loadById success', async () => {
+    const sut = makeSut();
+
+    const account = await sut.loadById(accountDataWithId.id);
+    expect(account).toEqual(accountDataWithId);
+  });
 });
