@@ -28,12 +28,12 @@ LoadAccountByIdRepository {
   }
 
   async loadById (id: string): Promise<AccountModel> {
-    await prismaDB.user.findFirst({
+    const account = await prismaDB.user.findFirst({
       where: {
         id,
       },
     });
 
-    return null;
+    return account;
   }
 }
