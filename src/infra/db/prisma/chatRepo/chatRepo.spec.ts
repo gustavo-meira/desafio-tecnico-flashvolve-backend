@@ -98,4 +98,11 @@ describe('ChatPrisma Repo', () => {
     const promise = sut.loadAll();
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a list of chats on success on loadAll', async () => {
+    const sut = makeSut();
+
+    const chats = await sut.loadAll();
+    expect(chats).toEqual([chatToResponse]);
+  });
 });
