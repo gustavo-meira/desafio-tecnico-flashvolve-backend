@@ -3,6 +3,7 @@ import { LoadAllChatsController } from './loadAllChats';
 import { type LoadAllChats } from '@/domain/useCases/loadAllChats';
 import { type ChatModel } from '@/domain/models/chat';
 import { type HttpRequest } from '../signup/signupProtocols';
+import { serverError } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -57,5 +58,13 @@ describe('LoadAllChats Controller', () => {
     await sut.handle(httpRequest);
 
     expect(loadAllSpy).toHaveBeenCalled();
+  });
+
+  it('Should return 500 if LoadAllChats throws', async () => {
+    const { sut, loadAllChatsStub } = makeSut();
+    jest.spyOn(loadAllChatsStub, 'loadAll').mockRejectedValueOnce(new Error());
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(serverError());
   });
 });
