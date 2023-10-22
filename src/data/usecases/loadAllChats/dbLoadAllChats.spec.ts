@@ -52,4 +52,12 @@ describe('DbLoadAllChats UseCase', () => {
     await sut.loadAll();
     expect(loadAllSpy).toHaveBeenCalled();
   });
+
+  it('Should throw if LoadAllChatsRepository throws', async () => {
+    const { sut, loadAllChatsRepositoryStub } = makeSut();
+    jest.spyOn(loadAllChatsRepositoryStub, 'loadAll').mockRejectedValueOnce(new Error());
+
+    const promise = sut.loadAll();
+    await expect(promise).rejects.toThrow();
+  });
 });
