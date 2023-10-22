@@ -129,4 +129,12 @@ describe('AccountPrisma Repository', () => {
     const promise = sut.loadById(accountDataWithId.id);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return null if loadById fails', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findFirst').mockResolvedValueOnce(null);
+
+    const account = await sut.loadById(accountDataWithId.id);
+    expect(account).toBeNull();
+  });
 });
