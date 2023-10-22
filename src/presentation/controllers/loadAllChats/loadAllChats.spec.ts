@@ -3,7 +3,7 @@ import { LoadAllChatsController } from './loadAllChats';
 import { type LoadAllChats } from '@/domain/useCases/loadAllChats';
 import { type ChatModel } from '@/domain/models/chat';
 import { type HttpRequest } from '../signup/signupProtocols';
-import { serverError } from '@/presentation/helpers/httpHelpers';
+import { ok, serverError } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -66,5 +66,12 @@ describe('LoadAllChats Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should return all chats on success', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(ok(chatsToResponse));
   });
 });
