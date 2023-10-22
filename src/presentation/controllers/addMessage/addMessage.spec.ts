@@ -1,4 +1,4 @@
-import { badRequest } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { AddMessageController } from './addMessage';
 import Chance from 'chance';
@@ -86,5 +86,13 @@ describe('AddMessage Controller', () => {
       ...httpRequest.body,
       fromBot: true,
     });
+  });
+
+  it('Should return serverError if AddMessage throws', async () => {
+    const { sut, addMessageStub } = makeSut();
+    jest.spyOn(addMessageStub, 'add').mockRejectedValueOnce(new Error());
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(serverError());
   });
 });
