@@ -6,8 +6,8 @@ export class DbLoadAllChats implements LoadAllChats {
   constructor (private readonly loadAllChatsRepository: LoadAllChatsRepository) { }
 
   async loadAll (): Promise<ChatModel[]> {
-    await this.loadAllChatsRepository.loadAll();
+    const chats = await this.loadAllChatsRepository.loadAll();
 
-    return [];
+    return chats;
   }
 }
