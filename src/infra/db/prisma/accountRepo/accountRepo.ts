@@ -3,8 +3,12 @@ import { type AccountModel } from '@/domain/models/account';
 import { type AddAccountModel } from '@/domain/useCases/addAccount';
 import { prismaDB } from '../lib/db';
 import { type LoadAccountByEmailRepository } from '@/data/protocols/loadAccountByEmailRepository';
+import { type LoadAccountByIdRepository } from '@/data/protocols/loadAccountByIdRepository';
 
-export class AccountPrismaRepo implements AddAccountRepository, LoadAccountByEmailRepository {
+export class AccountPrismaRepo implements
+AddAccountRepository,
+LoadAccountByEmailRepository,
+LoadAccountByIdRepository {
   async add (accountData: AddAccountModel): Promise<AccountModel> {
     const account = await prismaDB.user.create({
       data: accountData,
@@ -17,6 +21,16 @@ export class AccountPrismaRepo implements AddAccountRepository, LoadAccountByEma
     const account = await prismaDB.user.findUnique({
       where: {
         email,
+      },
+    });
+
+    return account;
+  }
+
+  async loadById (id: string): Promise<AccountModel> {
+    const account = await prismaDB.user.findFirst({
+      where: {
+        id,
       },
     });
 

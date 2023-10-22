@@ -29,6 +29,14 @@ jest.mock('../lib/db', () => ({
           id: BigInt(chatToResponse.id),
         };
       },
+      findMany: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return [{
+          ...chatToResponse,
+          id: BigInt(chatToResponse.id),
+        }];
+      },
     },
   },
 }));
@@ -40,7 +48,7 @@ const makeSut = (): ChatPrismaRepo => {
 };
 
 describe('ChatPrisma Repo', () => {
-  it('Should call prisma with correct values', async () => {
+  it('Should call prisma with correct values on add', async () => {
     const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.chat, 'upsert');
 
@@ -60,7 +68,7 @@ describe('ChatPrisma Repo', () => {
     });
   });
 
-  it('Should throw if prisma throws', async () => {
+  it('Should throw if prisma throws on add', async () => {
     const sut = makeSut();
     jest.spyOn(prismaDB.chat, 'upsert').mockRejectedValueOnce(new Error());
 
@@ -68,10 +76,33 @@ describe('ChatPrisma Repo', () => {
     await expect(promise).rejects.toThrow();
   });
 
-  it('Should return a chat on success', async () => {
+  it('Should return a chat on success on add', async () => {
     const sut = makeSut();
 
     const chat = await sut.add(chatData);
     expect(chat).toEqual(chatToResponse);
+  });
+
+  it('Should call prisma with correct values on loadAll', async () => {
+    const sut = makeSut();
+    const findManySpy = jest.spyOn(prismaDB.chat, 'findMany');
+
+    await sut.loadAll();
+    expect(findManySpy).toHaveBeenCalledWith({});
+  });
+
+  it('Should throw if prisma throws on loadAll', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.chat, 'findMany').mockRejectedValueOnce(new Error());
+
+    const promise = sut.loadAll();
+    await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return a list of chats on success on loadAll', async () => {
+    const sut = makeSut();
+
+    const chats = await sut.loadAll();
+    expect(chats).toEqual([chatToResponse]);
   });
 });

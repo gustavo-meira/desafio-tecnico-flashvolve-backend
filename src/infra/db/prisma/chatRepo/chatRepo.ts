@@ -2,8 +2,9 @@ import { type AddChatRepository } from '@/data/protocols/addChatRepository';
 import { type ChatModel } from '@/domain/models/chat';
 import { type AddChatModel } from '@/domain/useCases/addChat';
 import { prismaDB } from '../lib/db';
+import { type LoadAllChatsRepository } from '@/data/protocols/loadAllChatsRepository';
 
-export class ChatPrismaRepo implements AddChatRepository {
+export class ChatPrismaRepo implements AddChatRepository, LoadAllChatsRepository {
   async add (chatData: AddChatModel): Promise<ChatModel> {
     const chat = await prismaDB.chat.upsert({
       create: {
@@ -23,5 +24,14 @@ export class ChatPrismaRepo implements AddChatRepository {
       ...chat,
       id: Number(chat.id),
     };
+  }
+
+  async loadAll (): Promise<ChatModel[]> {
+    const chats = await prismaDB.chat.findMany({});
+
+    return chats.map((chat) => ({
+      ...chat,
+      id: Number(chat.id),
+    }));
   }
 }

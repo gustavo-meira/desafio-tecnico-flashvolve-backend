@@ -8,10 +8,6 @@ import { makeSignInValidations } from './signinValidations';
 export const makeSignInController = (): SignInController => {
   const jwtSecret = process.env.JWT_SECRET;
 
-  if (!jwtSecret) {
-    throw new Error('Missing JWT_SECRET env var');
-  }
-
   const jwtAdapter = new JwtAdapter(jwtSecret);
   const loadAccountByEmailRepo = new AccountPrismaRepo();
   const bcryptAdapter = new BcryptAdapter();

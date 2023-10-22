@@ -6,10 +6,15 @@ const chance = new Chance();
 
 const signedValue = chance.string();
 const jwtSecret = chance.string();
+const tokenToReceive = chance.string();
+const tokenDecrypted = chance.string();
 
 jest.mock('jsonwebtoken', () => ({
   sign: (): string => {
     return signedValue;
+  },
+  verify: (): any => {
+    return { id: tokenDecrypted };
   },
 }));
 
@@ -41,5 +46,54 @@ describe('Jwt Adapter', () => {
     });
 
     expect(sut.generate).toThrow();
+  });
+
+  it('Should call verify with correct values', async () => {
+    const sut = makeSut();
+    const verifySpy = jest.spyOn(jwt, 'verify');
+
+    await sut.decrypt(tokenToReceive);
+    expect(verifySpy).toHaveBeenCalledWith(tokenToReceive, jwtSecret);
+  });
+
+  it('Should return a value on verify success', async () => {
+    const sut = makeSut();
+
+    const value = await sut.decrypt(tokenToReceive);
+    expect(value).toBe(tokenDecrypted);
+  });
+
+  it('Should return null if verify throws JSONWebTokenError', async () => {
+    const sut = makeSut();
+    jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+      const error = new Error('invalid token');
+      error.name = 'JsonWebTokenError';
+      throw error;
+    });
+
+    const value = await sut.decrypt(tokenToReceive);
+    expect(value).toBeNull();
+  });
+
+  it('Should return null if verify throws TokenExpiredError', async () => {
+    const sut = makeSut();
+    jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+      const error = new Error('invalid token');
+      error.name = 'TokenExpiredError';
+      throw error;
+    });
+
+    const value = await sut.decrypt(tokenToReceive);
+    expect(value).toBeNull();
+  });
+
+  it('Should throw if verify throws other errors', async () => {
+    const sut = makeSut();
+    jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.decrypt(tokenToReceive);
+    await expect(promise).rejects.toThrow();
   });
 });

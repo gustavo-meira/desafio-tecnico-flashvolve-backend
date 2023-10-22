@@ -28,6 +28,11 @@ jest.mock('../lib/db', () => ({
 
         return accountDataWithId;
       },
+      async findFirst () {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return accountDataWithId;
+      },
     },
   },
 }));
@@ -101,5 +106,42 @@ describe('AccountPrisma Repository', () => {
 
     const promise = sut.loadByEmail(accountData.email);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should call prisma with correct value on loadById', async () => {
+    const sut = makeSut();
+    const findFirstSpy = jest.spyOn(prismaDB.user, 'findFirst');
+
+    await sut.loadById(accountDataWithId.id);
+    expect(findFirstSpy).toHaveBeenCalledWith({
+      where: {
+        id: accountDataWithId.id,
+      },
+    });
+  });
+
+  it('Should throw if prisma findFirst throw', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findFirst').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.loadById(accountDataWithId.id);
+    await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return null if loadById fails', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findFirst').mockResolvedValueOnce(null);
+
+    const account = await sut.loadById(accountDataWithId.id);
+    expect(account).toBeNull();
+  });
+
+  it('Should return an account on loadById success', async () => {
+    const sut = makeSut();
+
+    const account = await sut.loadById(accountDataWithId.id);
+    expect(account).toEqual(accountDataWithId);
   });
 });
