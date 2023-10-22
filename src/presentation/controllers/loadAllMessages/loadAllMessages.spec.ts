@@ -3,7 +3,7 @@ import { type HttpRequest, type InputValidation, type Validation } from '../sign
 import { LoadAllMessagesController } from './loadAllMessages';
 import { type LoadMessages } from '@/domain/useCases/loadMessages';
 import Chance from 'chance';
-import { badRequest, notFound, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, notFound, ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type MessageModel } from '@/domain/models/message';
 import { NotFoundError } from '@/presentation/errors/notFoundError';
 
@@ -108,5 +108,12 @@ describe('LoadAllMessages Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(notFound(new NotFoundError()));
+  });
+
+  it('Should return an array of messages on success', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(ok(messageToSend));
   });
 });
