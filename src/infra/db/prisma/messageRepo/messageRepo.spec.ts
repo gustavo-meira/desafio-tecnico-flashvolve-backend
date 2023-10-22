@@ -103,4 +103,11 @@ describe('MessagePrisma Repo', () => {
     const promise = sut.loadAll(messageData.chatId);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a list of messages on success on loadAll', async () => {
+    const sut = makeSut();
+    const messages = await sut.loadAll(messageData.chatId);
+
+    expect(messages).toEqual([messageToResponse]);
+  });
 });
