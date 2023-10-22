@@ -119,4 +119,14 @@ describe('AccountPrisma Repository', () => {
       },
     });
   });
+
+  it('Should throw if prisma findFirst throw', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.user, 'findFirst').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.loadById(accountDataWithId.id);
+    await expect(promise).rejects.toThrow();
+  });
 });
