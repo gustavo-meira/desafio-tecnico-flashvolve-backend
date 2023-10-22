@@ -28,6 +28,11 @@ jest.mock('../lib/db', () => ({
 
         return accountDataWithId;
       },
+      async findFirst () {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return accountDataWithId;
+      },
     },
   },
 }));
@@ -101,5 +106,17 @@ describe('AccountPrisma Repository', () => {
 
     const promise = sut.loadByEmail(accountData.email);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should call prisma with correct value on loadById', async () => {
+    const sut = makeSut();
+    const findFirstSpy = jest.spyOn(prismaDB.user, 'findFirst');
+
+    await sut.loadById(accountDataWithId.id);
+    expect(findFirstSpy).toHaveBeenCalledWith({
+      where: {
+        id: accountDataWithId.id,
+      },
+    });
   });
 });
