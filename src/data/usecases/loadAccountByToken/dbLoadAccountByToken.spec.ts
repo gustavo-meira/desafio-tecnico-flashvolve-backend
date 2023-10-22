@@ -94,4 +94,12 @@ describe('DbLoadAccountByToken UseCase', () => {
     const account = await sut.load(accessToken);
     expect(account).toBeNull();
   });
+
+  it('Should throw if LoadAccountByIdRepository throws', async () => {
+    const { sut, loadAccountByIdRepositoryStub } = makeSut();
+    jest.spyOn(loadAccountByIdRepositoryStub, 'loadById').mockRejectedValueOnce(new Error());
+
+    const promise = sut.load(accessToken);
+    await expect(promise).rejects.toThrow();
+  });
 });
