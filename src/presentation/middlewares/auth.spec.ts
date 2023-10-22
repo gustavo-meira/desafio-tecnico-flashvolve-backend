@@ -76,6 +76,6 @@ describe('Auth Middleware', () => {
     const { sut } = makeSut();
 
     const httpResponse = await sut.handle({ accessToken });
-    expect(httpResponse).toEqual(ok({ accountId: accountToSend.id }));
+    expect(httpResponse).toEqual(ok(accountToSend));
   });
 });
