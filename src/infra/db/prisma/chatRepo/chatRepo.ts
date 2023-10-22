@@ -27,8 +27,11 @@ export class ChatPrismaRepo implements AddChatRepository, LoadAllChatsRepository
   }
 
   async loadAll (): Promise<ChatModel[]> {
-    await prismaDB.chat.findMany({});
+    const chats = await prismaDB.chat.findMany({});
 
-    return [];
+    return chats.map((chat) => ({
+      ...chat,
+      id: Number(chat.id),
+    }));
   }
 }
