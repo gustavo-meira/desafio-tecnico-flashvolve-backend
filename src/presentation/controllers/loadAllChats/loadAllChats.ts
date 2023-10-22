@@ -1,5 +1,5 @@
 import { type LoadAllChats } from '@/domain/useCases/loadAllChats';
-import { serverError } from '@/presentation/helpers/httpHelpers';
+import { ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type Controller, type HttpRequest, type HttpResponse } from '@/presentation/protocols';
 
 export class LoadAllChatsController implements Controller {
@@ -7,9 +7,9 @@ export class LoadAllChatsController implements Controller {
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
     try {
-      await this.loadAllChats.loadAll();
+      const chats = await this.loadAllChats.loadAll();
 
-      return null;
+      return ok(chats);
     } catch (err) {
       return serverError();
     }
