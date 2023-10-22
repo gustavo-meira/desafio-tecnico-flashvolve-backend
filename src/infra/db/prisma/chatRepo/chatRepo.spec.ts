@@ -29,6 +29,14 @@ jest.mock('../lib/db', () => ({
           id: BigInt(chatToResponse.id),
         };
       },
+      findMany: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return [{
+          ...chatToResponse,
+          id: BigInt(chatToResponse.id),
+        }];
+      },
     },
   },
 }));
@@ -73,5 +81,13 @@ describe('ChatPrisma Repo', () => {
 
     const chat = await sut.add(chatData);
     expect(chat).toEqual(chatToResponse);
+  });
+
+  it('Should call prisma with correct values on loadAll', async () => {
+    const sut = makeSut();
+    const findManySpy = jest.spyOn(prismaDB.chat, 'findMany');
+
+    await sut.loadAll();
+    expect(findManySpy).toHaveBeenCalledWith({});
   });
 });
