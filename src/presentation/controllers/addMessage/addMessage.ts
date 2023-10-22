@@ -1,4 +1,4 @@
-import { badRequest } from '@/presentation/helpers/httpHelpers';
+import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
 import { type HttpRequest, type Controller, type HttpResponse, type Validation } from '../signup/signupProtocols';
 import { type AddMessage } from '@/domain/useCases/addMessage';
 
@@ -9,17 +9,21 @@ export class AddMessageController implements Controller {
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    const error = this.validation.validate(httpRequest.body);
+    try {
+      const error = this.validation.validate(httpRequest.body);
 
-    if (error) {
-      return badRequest(error);
+      if (error) {
+        return badRequest(error);
+      }
+
+      await this.addMessage.add({
+        ...httpRequest.body,
+        fromBot: true,
+      });
+
+      return null;
+    } catch (error) {
+      return serverError();
     }
-
-    await this.addMessage.add({
-      ...httpRequest.body,
-      fromBot: true,
-    });
-
-    return null;
   }
 }
