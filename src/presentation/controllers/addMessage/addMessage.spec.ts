@@ -2,6 +2,8 @@ import { badRequest } from '@/presentation/helpers/httpHelpers';
 import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { AddMessageController } from './addMessage';
 import Chance from 'chance';
+import { type AddMessageModel, type AddMessage } from '@/domain/useCases/addMessage';
+import { type MessageModel } from '@/domain/models/message';
 
 const chance = new Chance();
 
@@ -11,6 +13,23 @@ const httpRequest: HttpRequest = {
     text: chance.sentence(),
     senderName: chance.name(),
   },
+};
+
+const messageToResponse: MessageModel = {
+  ...httpRequest.body,
+  id: chance.integer({ min: 1000, max: 9999 }),
+  createdAt: chance.date(),
+  updatedAt: chance.date(),
+};
+
+const makeAddMessage = (): AddMessage => {
+  class AddMessageStub implements AddMessage {
+    async add (messageData: AddMessageModel): Promise<MessageModel> {
+      return await Promise.resolve(messageToResponse);
+    }
+  }
+
+  return new AddMessageStub();
 };
 
 const makeValidation = (): Validation => {
@@ -26,15 +45,18 @@ const makeValidation = (): Validation => {
 interface SutTypes {
   sut: AddMessageController;
   validationStub: Validation;
+  addMessageStub: AddMessage;
 }
 
 const makeSut = (): SutTypes => {
   const validationStub = makeValidation();
-  const sut = new AddMessageController(validationStub);
+  const addMessageStub = makeAddMessage();
+  const sut = new AddMessageController(validationStub, addMessageStub);
 
   return {
     sut,
     validationStub,
+    addMessageStub,
   };
 };
 
@@ -53,5 +75,16 @@ describe('AddMessage Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(badRequest(new Error()));
+  });
+
+  it('Should call AddMessage with correct values', async () => {
+    const { sut, addMessageStub } = makeSut();
+    const addSpy = jest.spyOn(addMessageStub, 'add');
+
+    await sut.handle(httpRequest);
+    expect(addSpy).toHaveBeenCalledWith({
+      ...httpRequest.body,
+      fromBot: true,
+    });
   });
 });
