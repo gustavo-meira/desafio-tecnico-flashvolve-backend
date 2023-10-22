@@ -17,7 +17,7 @@ export class JwtAdapter implements TokenGenerator, TokenDecrypter {
 
       return decrypted as string;
     } catch (error) {
-      if (error.name === 'JsonWebTokenError') {
+      if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
         return null;
       }
 
