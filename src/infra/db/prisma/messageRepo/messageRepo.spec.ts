@@ -32,6 +32,17 @@ jest.mock('../lib/db', () => ({
           id: BigInt(messageToResponse.id),
         };
       },
+      findMany: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        return [
+          {
+            ...messageToResponse,
+            chatId: BigInt(messageToResponse.chatId),
+            id: BigInt(messageToResponse.id),
+          },
+        ];
+      },
     },
   },
 }));
@@ -43,7 +54,7 @@ const makeSut = (): MessagePrismaRepo => {
 };
 
 describe('MessagePrisma Repo', () => {
-  it('Should call prisma with correct values', async () => {
+  it('Should call prisma with correct values on create', async () => {
     const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.message, 'create');
 
@@ -58,7 +69,7 @@ describe('MessagePrisma Repo', () => {
     });
   });
 
-  it('Should throw if prisma throws', async () => {
+  it('Should throw if prisma throws on create', async () => {
     const sut = makeSut();
     jest.spyOn(prismaDB.message, 'create').mockRejectedValueOnce(new Error());
 
@@ -66,10 +77,37 @@ describe('MessagePrisma Repo', () => {
     await expect(promise).rejects.toThrow();
   });
 
-  it('Should return the created message on success', async () => {
+  it('Should return the created message on success on create', async () => {
     const sut = makeSut();
     const message = await sut.add(messageData);
 
     expect(message).toEqual(messageToResponse);
+  });
+
+  it('Should call prisma with correct values on loadAll', async () => {
+    const sut = makeSut();
+    const findManySpy = jest.spyOn(prismaDB.message, 'findMany');
+
+    await sut.loadAll(messageData.chatId);
+    expect(findManySpy).toHaveBeenCalledWith({
+      where: {
+        chatId: BigInt(messageData.chatId),
+      },
+    });
+  });
+
+  it('Should throw if prisma throws on loadAll', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.message, 'findMany').mockRejectedValueOnce(new Error());
+
+    const promise = sut.loadAll(messageData.chatId);
+    await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return a list of messages on success on loadAll', async () => {
+    const sut = makeSut();
+    const messages = await sut.loadAll(messageData.chatId);
+
+    expect(messages).toEqual([messageToResponse]);
   });
 });
