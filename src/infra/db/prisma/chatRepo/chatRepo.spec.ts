@@ -40,7 +40,7 @@ const makeSut = (): ChatPrismaRepo => {
 };
 
 describe('ChatPrisma Repo', () => {
-  it('Should call prisma with correct values', async () => {
+  it('Should call prisma with correct values on add', async () => {
     const sut = makeSut();
     const createSpy = jest.spyOn(prismaDB.chat, 'upsert');
 
@@ -60,7 +60,7 @@ describe('ChatPrisma Repo', () => {
     });
   });
 
-  it('Should throw if prisma throws', async () => {
+  it('Should throw if prisma throws on add', async () => {
     const sut = makeSut();
     jest.spyOn(prismaDB.chat, 'upsert').mockRejectedValueOnce(new Error());
 
@@ -68,7 +68,7 @@ describe('ChatPrisma Repo', () => {
     await expect(promise).rejects.toThrow();
   });
 
-  it('Should return a chat on success', async () => {
+  it('Should return a chat on success on add', async () => {
     const sut = makeSut();
 
     const chat = await sut.add(chatData);
