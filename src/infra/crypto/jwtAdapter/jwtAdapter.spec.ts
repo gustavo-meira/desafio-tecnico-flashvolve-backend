@@ -13,8 +13,8 @@ jest.mock('jsonwebtoken', () => ({
   sign: (): string => {
     return signedValue;
   },
-  verify: (): string => {
-    return tokenDecrypted;
+  verify: (): any => {
+    return { id: tokenDecrypted };
   },
 }));
 

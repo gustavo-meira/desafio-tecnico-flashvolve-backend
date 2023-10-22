@@ -13,9 +13,9 @@ export class JwtAdapter implements TokenGenerator, TokenDecrypter {
 
   async decrypt (value: string): Promise<string> {
     try {
-      const decrypted = jwt.verify(value, this.secret);
+      const decrypted = jwt.verify(value, this.secret) as unknown as { id: string };
 
-      return decrypted as string;
+      return decrypted.id;
     } catch (error) {
       if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
         return null;
