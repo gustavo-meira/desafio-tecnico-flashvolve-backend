@@ -95,4 +95,12 @@ describe('MessagePrisma Repo', () => {
       },
     });
   });
+
+  it('Should throw if prisma throws on loadAll', async () => {
+    const sut = makeSut();
+    jest.spyOn(prismaDB.message, 'findMany').mockRejectedValueOnce(new Error());
+
+    const promise = sut.loadAll(messageData.chatId);
+    await expect(promise).rejects.toThrow();
+  });
 });
