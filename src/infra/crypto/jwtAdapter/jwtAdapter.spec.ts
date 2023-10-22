@@ -74,4 +74,16 @@ describe('Jwt Adapter', () => {
     const value = await sut.decrypt(tokenToReceive);
     expect(value).toBeNull();
   });
+
+  it('Should return null if verify throws TokenExpiredError', async () => {
+    const sut = makeSut();
+    jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+      const error = new Error('invalid token');
+      error.name = 'TokenExpiredError';
+      throw error;
+    });
+
+    const value = await sut.decrypt(tokenToReceive);
+    expect(value).toBeNull();
+  });
 });
