@@ -1,8 +1,10 @@
 import { MissingParamError } from '@/presentation/errors';
 import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { LoadAllMessagesController } from './loadAllMessages';
+import { type LoadMessages } from '@/domain/useCases/loadMessages';
 import Chance from 'chance';
 import { badRequest } from '@/presentation/helpers/httpHelpers';
+import { type MessageModel } from '@/domain/models/message';
 
 const chance = new Chance();
 
@@ -11,6 +13,22 @@ const httpRequest: HttpRequest = {
     chatId: chance.string(),
   },
 };
+
+const makeMessage = (): MessageModel => ({
+  id: chance.integer(),
+  text: chance.string(),
+  chatId: chance.integer(),
+  senderName: chance.name(),
+  fromBot: chance.bool(),
+  createdAt: chance.date(),
+  updatedAt: chance.date(),
+});
+
+const messageToSend = [
+  makeMessage(),
+  makeMessage(),
+  makeMessage(),
+];
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
@@ -22,18 +40,31 @@ const makeValidation = (): Validation => {
   return new ValidationStub();
 };
 
+const makeLoadMessages = (): LoadMessages => {
+  class LoadMessagesStub implements LoadMessages {
+    async load (chatId: number): Promise<MessageModel[]> {
+      return messageToSend;
+    }
+  }
+
+  return new LoadMessagesStub();
+};
+
 interface SutTypes {
   sut: LoadAllMessagesController;
   validationStub: Validation;
+  loadMessagesStub: LoadMessages;
 }
 
 const makeSut = (): SutTypes => {
   const validationStub = makeValidation();
-  const sut = new LoadAllMessagesController(validationStub);
+  const loadMessagesStub = makeLoadMessages();
+  const sut = new LoadAllMessagesController(validationStub, loadMessagesStub);
 
   return {
     sut,
     validationStub,
+    loadMessagesStub,
   };
 };
 
@@ -52,5 +83,13 @@ describe('LoadAllMessages Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(badRequest(new MissingParamError('chatId')));
+  });
+
+  it('Should call LoadAllMessages with correct values', async () => {
+    const { sut, loadMessagesStub } = makeSut();
+    const loadSpy = jest.spyOn(loadMessagesStub, 'load');
+
+    await sut.handle(httpRequest);
+    expect(loadSpy).toHaveBeenCalledWith(httpRequest.body.chatId);
   });
 });
