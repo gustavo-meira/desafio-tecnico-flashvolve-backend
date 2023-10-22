@@ -1,16 +1,35 @@
 import { type Decrypter } from '@/data/protocols/decrypter';
 import { DbLoadAccountByToken } from './dbLoadAccountByToken';
 import Chance from 'chance';
+import { type LoadAccountByIdRepository } from '@/data/protocols/loadAccountByIdRepository';
+import { type AccountModel } from '../addAccount/dbAddAccountProtocols';
 
 const chance = new Chance();
 
-const decrypterReturn = chance.string();
+const id = chance.guid();
 const accessToken = chance.string({ length: 32 });
+
+const accountToResponse: AccountModel = {
+  id,
+  name: chance.name(),
+  email: chance.email(),
+  password: chance.string(),
+};
+
+const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
+  class LoadAccountByIdRepositoryStub implements LoadAccountByIdRepository {
+    async loadById (id: string): Promise<AccountModel> {
+      return accountToResponse;
+    }
+  }
+
+  return new LoadAccountByIdRepositoryStub();
+};
 
 const makeDecrypter = (): Decrypter => {
   class DecrypterStub implements Decrypter {
     async decrypt (value: string): Promise<string> {
-      return decrypterReturn;
+      return id;
     }
   }
 
@@ -20,15 +39,18 @@ const makeDecrypter = (): Decrypter => {
 interface SutTypes {
   sut: DbLoadAccountByToken;
   decrypterStub: Decrypter;
+  loadAccountByIdRepositoryStub: LoadAccountByIdRepository;
 }
 
 const makeSut = (): SutTypes => {
   const decrypterStub = makeDecrypter();
-  const sut = new DbLoadAccountByToken(decrypterStub);
+  const loadAccountByIdRepositoryStub = makeLoadAccountByIdRepository();
+  const sut = new DbLoadAccountByToken(decrypterStub, loadAccountByIdRepositoryStub);
 
   return {
     sut,
     decrypterStub,
+    loadAccountByIdRepositoryStub,
   };
 };
 
@@ -55,5 +77,13 @@ describe('DbLoadAccountByToken UseCase', () => {
 
     const promise = sut.load(accessToken);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should call LoadAccountByIdRepository with correct value', async () => {
+    const { sut, loadAccountByIdRepositoryStub } = makeSut();
+    const loadByIdSpy = jest.spyOn(loadAccountByIdRepositoryStub, 'loadById');
+
+    await sut.load(accessToken);
+    expect(loadByIdSpy).toHaveBeenCalledWith(accountToResponse.id);
   });
 });
