@@ -1,4 +1,4 @@
-import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { AddMessageController } from './addMessage';
 import Chance from 'chance';
@@ -94,5 +94,12 @@ describe('AddMessage Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse).toEqual(serverError());
+  });
+
+  it('Should return the created message on success', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(ok(messageToResponse));
   });
 });
