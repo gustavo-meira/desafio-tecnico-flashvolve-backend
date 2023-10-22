@@ -64,4 +64,11 @@ describe('DbLoadAllMessages UseCase', () => {
     const promise = sut.load(chatId);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a list of messages on success', async () => {
+    const { sut } = makeSut();
+
+    const messages = await sut.load(chatId);
+    expect(messages).toEqual(messageToSend);
+  });
 });
