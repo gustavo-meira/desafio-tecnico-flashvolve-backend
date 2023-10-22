@@ -1,4 +1,4 @@
-import { type Decrypter } from '@/data/protocols/decrypter';
+import { type TokenDecrypter } from '@/data/protocols/tokenDecrypter';
 import { DbLoadAccountByToken } from './dbLoadAccountByToken';
 import Chance from 'chance';
 import { type LoadAccountByIdRepository } from '@/data/protocols/loadAccountByIdRepository';
@@ -26,8 +26,8 @@ const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
   return new LoadAccountByIdRepositoryStub();
 };
 
-const makeDecrypter = (): Decrypter => {
-  class DecrypterStub implements Decrypter {
+const makeDecrypter = (): TokenDecrypter => {
+  class DecrypterStub implements TokenDecrypter {
     async decrypt (value: string): Promise<string> {
       return id;
     }
@@ -38,7 +38,7 @@ const makeDecrypter = (): Decrypter => {
 
 interface SutTypes {
   sut: DbLoadAccountByToken;
-  decrypterStub: Decrypter;
+  decrypterStub: TokenDecrypter;
   loadAccountByIdRepositoryStub: LoadAccountByIdRepository;
 }
 
