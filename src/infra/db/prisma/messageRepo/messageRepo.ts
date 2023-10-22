@@ -23,12 +23,16 @@ export class MessagePrismaRepo implements AddMessageRepository, LoadAllMessagesR
   }
 
   async loadAll (chatId: number): Promise<MessageModel[]> {
-    await prismaDB.message.findMany({
+    const messages = await prismaDB.message.findMany({
       where: {
         chatId: BigInt(chatId),
       },
     });
 
-    return [];
+    return messages.map((message) => ({
+      ...message,
+      id: Number(message.id),
+      chatId: Number(message.chatId),
+    }));
   }
 }
