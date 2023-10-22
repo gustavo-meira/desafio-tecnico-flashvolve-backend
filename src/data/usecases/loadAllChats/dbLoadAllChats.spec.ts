@@ -60,4 +60,11 @@ describe('DbLoadAllChats UseCase', () => {
     const promise = sut.loadAll();
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should return a list of chats on success', async () => {
+    const { sut } = makeSut();
+
+    const chats = await sut.loadAll();
+    expect(chats).toEqual(chatsToResponse);
+  });
 });
