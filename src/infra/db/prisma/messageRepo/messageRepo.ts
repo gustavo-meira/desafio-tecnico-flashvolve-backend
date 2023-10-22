@@ -1,9 +1,10 @@
 import { prismaDB } from '../lib/db';
 import { type AddMessageRepository } from '@/data/protocols/addMessageRepository';
+import { type LoadAllMessagesRepository } from '@/data/protocols/loadAllMessagesRepository';
 import { type MessageModel } from '@/domain/models/message';
 import { type AddMessageModel } from '@/domain/useCases/addMessage';
 
-export class MessagePrismaRepo implements AddMessageRepository {
+export class MessagePrismaRepo implements AddMessageRepository, LoadAllMessagesRepository {
   async add (messageData: AddMessageModel): Promise<MessageModel> {
     const message = await prismaDB.message.create({
       data: {
@@ -19,5 +20,15 @@ export class MessagePrismaRepo implements AddMessageRepository {
       id: Number(message.id),
       chatId: Number(message.chatId),
     };
+  }
+
+  async loadAll (chatId: number): Promise<MessageModel[]> {
+    await prismaDB.message.findMany({
+      where: {
+        chatId: BigInt(chatId),
+      },
+    });
+
+    return [];
   }
 }
