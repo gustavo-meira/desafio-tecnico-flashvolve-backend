@@ -1,4 +1,4 @@
-import { badRequest, serverError } from '@/presentation/helpers/httpHelpers';
+import { badRequest, ok, serverError } from '@/presentation/helpers/httpHelpers';
 import { type HttpRequest, type Controller, type HttpResponse, type Validation } from '../signup/signupProtocols';
 import { type AddMessage } from '@/domain/useCases/addMessage';
 
@@ -16,12 +16,12 @@ export class AddMessageController implements Controller {
         return badRequest(error);
       }
 
-      await this.addMessage.add({
+      const message = await this.addMessage.add({
         ...httpRequest.body,
         fromBot: true,
       });
 
-      return null;
+      return ok(message);
     } catch (error) {
       return serverError();
     }
