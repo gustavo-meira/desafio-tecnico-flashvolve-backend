@@ -6,10 +6,15 @@ const chance = new Chance();
 
 const signedValue = chance.string();
 const jwtSecret = chance.string();
+const tokenToReceive = chance.string();
+const tokenDecrypted = chance.string();
 
 jest.mock('jsonwebtoken', () => ({
   sign: (): string => {
     return signedValue;
+  },
+  verify: (): string => {
+    return tokenDecrypted;
   },
 }));
 
@@ -41,5 +46,13 @@ describe('Jwt Adapter', () => {
     });
 
     expect(sut.generate).toThrow();
+  });
+
+  it('Should call verify with correct values', async () => {
+    const sut = makeSut();
+    const verifySpy = jest.spyOn(jwt, 'verify');
+
+    await sut.decrypt(tokenToReceive);
+    expect(verifySpy).toHaveBeenCalledWith(tokenToReceive, jwtSecret);
   });
 });
