@@ -1,6 +1,8 @@
+import { MissingParamError } from '@/presentation/errors';
 import { type HttpRequest, type InputValidation, type Validation } from '../signup/signupProtocols';
 import { LoadAllMessagesController } from './loadAllMessages';
 import Chance from 'chance';
+import { badRequest } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -42,5 +44,13 @@ describe('LoadAllMessages Controller', () => {
 
     await sut.handle(httpRequest);
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body);
+  });
+
+  it('Should return badRequest if Validation fails', async () => {
+    const { sut, validationStub } = makeSut();
+    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('chatId'));
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('chatId')));
   });
 });
