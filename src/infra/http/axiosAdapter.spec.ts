@@ -8,7 +8,7 @@ const chance = new Chance();
 const url = chance.url();
 const botToken = chance.string({ length: 12 });
 
-const urlToPost = `${url}/bot${botToken}/sendMessage`;
+const urlToPost = `${url}${botToken}/sendMessage`;
 
 const messageToSend: AddMessageModel = {
   chatId: chance.integer(),

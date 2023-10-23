@@ -9,7 +9,7 @@ export class AxiosAdapter implements PostMessage {
   ) {}
 
   async postMessage (message: AddMessageModel): Promise<void> {
-    await axios.post(`${this.url}/bot${this.botToken}/sendMessage`, {
+    await axios.post(`${this.url}${this.botToken}/sendMessage`, {
       chat_id: message.chatId,
       text: message.text,
     });
