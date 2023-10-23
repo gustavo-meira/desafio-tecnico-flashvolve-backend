@@ -6,6 +6,7 @@ import { DbAddMessage } from './dbAddMessage';
 import { type AddChatRepository } from '@/data/protocols/addChatRepository';
 import { type AddChatModel } from '@/domain/useCases/addChat';
 import { type ChatModel } from '@/domain/models/chat';
+import { type PostMessage } from '@/data/protocols/postMessage';
 
 const chance = new Chance();
 
@@ -35,6 +36,16 @@ const chatToResponse: ChatModel = {
   updatedAt: chance.date(),
 };
 
+const makePostMessage = (): PostMessage => {
+  class PostMessageStub implements PostMessage {
+    async postMessage (message: MessageModel): Promise<void> {
+      await Promise.resolve();
+    }
+  }
+
+  return new PostMessageStub();
+};
+
 const makeAddChatRepository = (): AddChatRepository => {
   class AddChatRepositoryStub implements AddChatRepository {
     async add (chatData: AddChatModel): Promise<ChatModel> {
@@ -59,17 +70,20 @@ interface SutTypes {
   sut: DbAddMessage;
   addMessageRepositoryStub: AddMessageRepository;
   addChatRepositoryStub: AddChatRepository;
+  postMessageStub: PostMessage;
 }
 
 const makeSut = (): SutTypes => {
   const addMessageRepositoryStub = makeAddMessageRepository();
   const addChatRepositoryStub = makeAddChatRepository();
-  const sut = new DbAddMessage(addMessageRepositoryStub, addChatRepositoryStub);
+  const postMessageStub = makePostMessage();
+  const sut = new DbAddMessage(addMessageRepositoryStub, addChatRepositoryStub, postMessageStub);
 
   return {
     sut,
     addMessageRepositoryStub,
     addChatRepositoryStub,
+    postMessageStub,
   };
 };
 
@@ -103,6 +117,14 @@ describe('DbAddMessage UseCase', () => {
 
     await sut.add(messageData);
     expect(addSpy).toHaveBeenCalledWith(chatData);
+  });
+
+  it('Should call postMessage if message is from bot', async () => {
+    const { sut, postMessageStub } = makeSut();
+    const postSpy = jest.spyOn(postMessageStub, 'postMessage');
+
+    await sut.add({ ...messageData, fromBot: true });
+    expect(postSpy).toHaveBeenCalledWith(messageToResponse);
   });
 
   it('Should throw if AddChatRepository throws', async () => {
