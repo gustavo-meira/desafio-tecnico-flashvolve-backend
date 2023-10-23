@@ -13,7 +13,7 @@ export const adaptExpressAuthMiddleware = (middleware: Middleware<any>) => {
       return res.status(statusCode).json(body);
     }
 
-    Object.assign(req, body);
+    Object.assign(req.body, body);
 
     next();
   };

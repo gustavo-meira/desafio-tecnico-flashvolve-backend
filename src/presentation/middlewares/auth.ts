@@ -19,7 +19,7 @@ export class AuthMiddleware implements Middleware<AuthMiddlewareParams> {
         const account = await this.loadAccountByToken.load(request.accessToken);
 
         if (account) {
-          return ok({ accountId: account.id });
+          return ok(account);
         }
       }
 
