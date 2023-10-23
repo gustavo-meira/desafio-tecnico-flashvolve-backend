@@ -142,4 +142,12 @@ describe('DbAddMessage UseCase', () => {
     const promise = sut.add(messageData);
     await expect(promise).rejects.toThrow();
   });
+
+  it('Should throw if AddChatRepository throws', async () => {
+    const { sut, addChatRepositoryStub } = makeSut();
+    jest.spyOn(addChatRepositoryStub, 'add').mockRejectedValueOnce(new Error());
+
+    const promise = sut.add(messageData);
+    await expect(promise).rejects.toThrow();
+  });
 });
