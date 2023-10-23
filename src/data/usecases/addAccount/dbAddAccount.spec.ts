@@ -132,6 +132,16 @@ describe('DBAddAccount UseCase', () => {
     expect(generateSpy).toHaveBeenCalledWith(accountModel.id);
   });
 
+  it('Should throw if TokenGenerator throws', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+    jest.spyOn(tokenGeneratorStub, 'generate').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.add(accountData);
+    await expect(promise).rejects.toThrow();
+  });
+
   it('Should return an accessToken on success', async () => {
     const { sut } = makeSut();
 
