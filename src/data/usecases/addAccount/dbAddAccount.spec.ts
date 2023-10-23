@@ -1,3 +1,4 @@
+import { type TokenGenerator } from '../authentication/dbAuthenticationProtocols';
 import { DBAddAccount } from './dbAddAccount';
 import {
   type AddAccountRepository,
@@ -20,6 +21,18 @@ const accountData: AddAccountModel = {
 const accountModel: AccountModel = {
   id: chance.guid(),
   ...accountData,
+};
+
+const tokenToResponse = chance.string();
+
+const makeTokenGenerator = (): TokenGenerator => {
+  class TokenGeneratorStub implements TokenGenerator {
+    generate (userId: string): string {
+      return tokenToResponse;
+    }
+  }
+
+  return new TokenGeneratorStub();
 };
 
 const makeHasher = (): Hasher => {
@@ -50,17 +63,20 @@ interface SutTypes {
   sut: DBAddAccount;
   hasherStub: Hasher;
   addAccountRepositoryStub: AddAccountRepository;
+  tokenGeneratorStub: TokenGenerator;
 }
 
 const makeSut = (): SutTypes => {
   const hasherStub = makeHasher();
   const addAccountRepositoryStub = makeAddAccountRepository();
-  const sut = new DBAddAccount(hasherStub, addAccountRepositoryStub);
+  const tokenGeneratorStub = makeTokenGenerator();
+  const sut = new DBAddAccount(hasherStub, addAccountRepositoryStub, tokenGeneratorStub);
 
   return {
     sut,
     hasherStub,
     addAccountRepositoryStub,
+    tokenGeneratorStub,
   };
 };
 
@@ -108,10 +124,28 @@ describe('DBAddAccount UseCase', () => {
     await expect(promise).rejects.toThrow();
   });
 
-  it('Should return an account on success', async () => {
+  it('Should call TokenGenerator with correct userId', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+    const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate');
+
+    await sut.add(accountData);
+    expect(generateSpy).toHaveBeenCalledWith(accountModel.id);
+  });
+
+  it('Should throw if TokenGenerator throws', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+    jest.spyOn(tokenGeneratorStub, 'generate').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.add(accountData);
+    await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return an accessToken on success', async () => {
     const { sut } = makeSut();
 
-    const account = await sut.add(accountData);
-    expect(account).toEqual(accountModel);
+    const accessToken = await sut.add(accountData);
+    expect(accessToken).toBe(tokenToResponse);
   });
 });

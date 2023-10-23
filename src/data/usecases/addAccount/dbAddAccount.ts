@@ -1,6 +1,6 @@
+import { type TokenGenerator } from '../authentication/dbAuthenticationProtocols';
 import {
   type AddAccountRepository,
-  type AccountModel,
   type AddAccount,
   type AddAccountModel,
   type Hasher,
@@ -10,14 +10,17 @@ export class DBAddAccount implements AddAccount {
   constructor (
     private readonly hasher: Hasher,
     private readonly addAccountRepository: AddAccountRepository,
+    private readonly tokenGenerator: TokenGenerator,
   ) {}
 
-  async add (accountData: AddAccountModel): Promise<AccountModel> {
+  async add (accountData: AddAccountModel): Promise<string> {
     const hashedPassword = await this.hasher.hash(accountData.password);
     const account = await this.addAccountRepository.add(
       { ...accountData, password: hashedPassword },
     );
 
-    return account;
+    const accessToken = this.tokenGenerator.generate(account.id);
+
+    return accessToken;
   };
 }

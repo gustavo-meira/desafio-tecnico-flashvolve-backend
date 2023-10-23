@@ -7,9 +7,8 @@ import {
 } from './signupProtocols';
 import { SignUpController } from './signup';
 import { MissingParamError, ServerError } from '@/presentation/errors';
-import { type AccountModel } from '@/domain/models/account';
+import { badRequest, created } from '@/presentation/helpers/httpHelpers';
 import Chance from 'chance';
-import { badRequest } from '@/presentation/helpers/httpHelpers';
 
 const chance = new Chance();
 
@@ -19,17 +18,14 @@ const validAccount: AddAccountModel = {
   password: chance.word(),
 };
 
-const validAccountResponse: AccountModel = {
-  id: chance.guid(),
-  ...validAccount,
-};
+const tokenToResponse = chance.string();
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    async add (account: AddAccountModel): Promise<AccountModel> {
+    async add (account: AddAccountModel): Promise<string> {
       await new Promise((resolve) => setTimeout(resolve, 1));
 
-      return validAccountResponse;
+      return tokenToResponse;
     }
   }
 
@@ -98,11 +94,7 @@ describe('SignUp Controller', () => {
     const httpRequest = makeHttpRequest();
 
     const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(201);
-    expect(httpResponse.body).toEqual({
-      name: validAccountResponse.name,
-      email: validAccountResponse.email,
-    });
+    expect(httpResponse).toEqual(created({ accessToken: tokenToResponse }));
   });
 
   it('Should call Validation with correct values', async () => {
