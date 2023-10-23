@@ -122,16 +122,18 @@ describe('DbAddMessage UseCase', () => {
   it('Should call postMessage if message is from bot', async () => {
     const { sut, postMessageStub } = makeSut();
     const postSpy = jest.spyOn(postMessageStub, 'postMessage');
+    const messageToPost = { ...messageData, fromBot: true };
 
-    await sut.add({ ...messageData, fromBot: true });
-    expect(postSpy).toHaveBeenCalledWith(messageToResponse);
+    await sut.add(messageToPost);
+    expect(postSpy).toHaveBeenCalledWith(messageToPost);
   });
 
   it('Should not call postMessage if message is not from bot', async () => {
     const { sut, postMessageStub } = makeSut();
     const postSpy = jest.spyOn(postMessageStub, 'postMessage');
+    const messageToPost = { ...messageData, fromBot: false };
 
-    await sut.add({ ...messageData, fromBot: false });
+    await sut.add(messageToPost);
     expect(postSpy).not.toHaveBeenCalled();
   });
 

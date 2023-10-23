@@ -1,5 +1,5 @@
-import { type MessageModel } from '@/domain/models/message';
+import { type AddMessageModel } from '@/domain/useCases/addMessage';
 
 export interface PostMessage {
-  postMessage: (message: MessageModel) => Promise<void>;
+  postMessage: (message: AddMessageModel) => Promise<void>;
 }

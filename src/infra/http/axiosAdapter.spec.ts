@@ -1,7 +1,7 @@
-import { type MessageModel } from '@/domain/models/message';
 import { AxiosAdapter } from './axiosAdapter';
 import axios from 'axios';
 import Chance from 'chance';
+import { type AddMessageModel } from '@/domain/useCases/addMessage';
 
 const chance = new Chance();
 
@@ -10,14 +10,11 @@ const botToken = chance.string({ length: 12 });
 
 const urlToPost = `${url}/bot${botToken}/sendMessage`;
 
-const messageToSend: MessageModel = {
-  id: chance.integer(),
+const messageToSend: AddMessageModel = {
   chatId: chance.integer(),
   fromBot: chance.bool(),
   senderName: chance.name(),
   text: chance.string(),
-  createdAt: chance.date(),
-  updatedAt: chance.date(),
 };
 
 jest.mock('axios', () => ({

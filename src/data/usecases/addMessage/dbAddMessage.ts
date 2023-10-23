@@ -12,6 +12,10 @@ export class DbAddMessage implements AddMessage {
   ) {}
 
   async add (messageData: AddMessageModel): Promise<MessageModel> {
+    if (messageData.fromBot) {
+      await this.postMessage.postMessage(messageData);
+    }
+
     await this.addChatRepository.add({
       id: messageData.chatId,
       lastMessage: messageData.text,
@@ -19,10 +23,6 @@ export class DbAddMessage implements AddMessage {
     });
 
     const message = await this.addMessageRepository.add(messageData);
-
-    if (messageData.fromBot) {
-      await this.postMessage.postMessage(message);
-    }
 
     return message;
   }
