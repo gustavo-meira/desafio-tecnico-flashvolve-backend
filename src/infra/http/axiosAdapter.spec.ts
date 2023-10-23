@@ -43,4 +43,12 @@ describe('Axios Adapter', () => {
       text: messageToSend.text,
     });
   });
+
+  it('Should throw if axios throws', async () => {
+    const sut = makeSut();
+    jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error());
+
+    const promise = sut.postMessage(messageToSend);
+    await expect(promise).rejects.toThrow();
+  });
 });
