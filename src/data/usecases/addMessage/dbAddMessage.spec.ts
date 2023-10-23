@@ -127,6 +127,14 @@ describe('DbAddMessage UseCase', () => {
     expect(postSpy).toHaveBeenCalledWith(messageToResponse);
   });
 
+  it('Should not call postMessage if message is not from bot', async () => {
+    const { sut, postMessageStub } = makeSut();
+    const postSpy = jest.spyOn(postMessageStub, 'postMessage');
+
+    await sut.add({ ...messageData, fromBot: false });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
   it('Should throw if AddChatRepository throws', async () => {
     const { sut, addChatRepositoryStub } = makeSut();
     jest.spyOn(addChatRepositoryStub, 'add').mockRejectedValueOnce(new Error());
