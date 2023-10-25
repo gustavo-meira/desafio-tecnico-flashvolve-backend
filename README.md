@@ -2,6 +2,8 @@
 
 Aplicação backend desenvolvida com NodeJS, PrismaORM e PostgreSQL para o projeto Flashvolve. Ela visa integrar mensagens do telegram com um frontend em Vue.
 
+Para ver o projeto rodando entre nesse [link](https://flashvolve-frontend.vercel.app/)
+
 ## Como rodar
 
 ### Pré-requisitos
