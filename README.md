@@ -11,6 +11,10 @@ Aplicação backend desenvolvida com NodeJS, PrismaORM e PostgreSQL para o proje
 - PostgreSQL
 - LocalTunnel
 
+### Testes
+
+Para rodar os testes, basta rodar o comando `pnpm test`, ou então, `pnpm test:ci` para ver a cobertura de testes.
+
 ### Instalação
 
 1. Clone o repositório.
