@@ -10,6 +10,7 @@ Aplicação backend desenvolvida com NodeJS, PrismaORM e PostgreSQL para o proje
 - [Pnpm](https://pnpm.io/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [LocalTunnel](https://github.com/localtunnel/localtunnel)
+- [Bot Telegram](https://t.me/BotFather)
 
 ### Testes
 
