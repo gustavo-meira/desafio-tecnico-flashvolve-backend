@@ -6,10 +6,10 @@ Aplicação backend desenvolvida com NodeJS, PrismaORM e PostgreSQL para o proje
 
 ### Pré-requisitos
 
-- NodeJS
-- Pnpm
-- PostgreSQL
-- LocalTunnel
+- [NodeJS](https://nodejs.org/en)
+- [Pnpm](https://pnpm.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [LocalTunnel](https://github.com/localtunnel/localtunnel)
 
 ### Testes
 
