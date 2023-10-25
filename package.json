@@ -11,13 +11,13 @@
     "test:integration": "pnpm test -- --watch -c jest.config.integration.ts",
     "test:staged": "pnpm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage",
-    "postinstall": "prisma generate",
-    "prepare": "husky install"
+    "postinstall": "pnpm dlx prisma generate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.10",
     "@types/bcrypt": "^5.0.0",
     "@types/chance": "^1.1.4",
     "@types/express": "^4.17.19",

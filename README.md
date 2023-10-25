@@ -29,10 +29,20 @@ Para rodar os testes, basta rodar o comando `pnpm test`, ou então, `pnpm test:c
 
 6. Rode o LocalTunnel com o comando `lt --port 3333`.
 
-7. Copie a URL gerada pelo LocalTunnel.
+7. Abra a url e configure o LocalTunnel com seu ip.
 
-8. Dê um POST na URL `https://api.telegram.org/bot<TELEGRAM_TOKEN>/setWebhook?url=<URL_DO_LOCAL_TUNNEL>`.
+8. Copie a URL gerada pelo LocalTunnel.
 
-9. Envie uma mensagem para o bot do telegram.
+9. Dê um POST na URL `https://api.telegram.org/bot<TELEGRAM_TOKEN>/setWebhook?url=<URL_DO_LOCAL_TUNNEL>`.
 
-10. Rode o frontend da aplicação para ver as mensagens.
+10. Envie uma mensagem para o bot do telegram.
+
+11. Rode o frontend da aplicação para ver as mensagens.
+
+## Pontos de melhoria
+
+- [ ] Adicionar testes de integração.
+- [ ] Adicionar Socket.IO para atualizar as mensagens em tempo real.
+- [ ] Adicionar Docker.
+- [ ] Adicionar CI/CD.
+- [ ] Adicionar documentação com Swagger.
