@@ -33,7 +33,7 @@ Para rodar os testes, basta rodar o comando `pnpm test`, ou então, `pnpm test:c
 
 8. Copie a URL gerada pelo LocalTunnel.
 
-9. Dê um POST na URL `https://api.telegram.org/bot<TELEGRAM_TOKEN>/setWebhook?url=<URL_DO_LOCAL_TUNNEL>`.
+9. Dê um POST na URL `https://api.telegram.org/bot<TELEGRAM_TOKEN>/setWebhook?url=<URL_DO_LOCAL_TUNNEL>/api/telegram/webhook`.
 
 10. Envie uma mensagem para o bot do telegram.
 
