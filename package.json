@@ -11,6 +11,7 @@
     "test:integration": "pnpm test -- --watch -c jest.config.integration.ts",
     "test:staged": "pnpm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage",
+    "postinstall": "prisma generate",
     "prepare": "husky install"
   },
   "keywords": [],
